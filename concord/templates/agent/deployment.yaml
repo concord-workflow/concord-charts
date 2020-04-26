@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concord-agent
+spec:
+  selector:
+    matchLabels:
+      app: concord-agent
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: concord-agent
+    spec:
+      hostNetwork: {{ .Values.agent.hostNetwork }}
+      containers:
+        - name: dind
+          image: {{ .Values.dind.image.repository }}:{{ .Values.dind.image.tag }}
+          command: {{ .Values.dind.image.command }}
+          args: {{ .Values.dind.image.args }}
+          volumeMounts:
+            - name: "process-tmp"
+              mountPath: "/tmp"
+            {{- if .Values.ccdMode }}
+            - name: "ccd-volume"
+              mountPath: "/repo"
+            {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.agent.resources.requests.memory }}
+              cpu: {{ .Values.agent.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.agent.resources.limits.memory }}
+              cpu: {{ .Values.agent.resources.limits.cpu }}
+          securityContext:
+            privileged: true
+
+        - name: agent
+          image: {{ .Values.registry }}/concord-agent:{{ .Values.version }}
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          volumeMounts:
+            - name: "cfg"
+              mountPath: "/opt/concord/conf"
+            - name: "process-tmp"
+              mountPath: "/tmp"
+          resources:
+            requests:
+              memory: {{ .Values.agent.resources.requests.memory }}
+              cpu: {{ .Values.agent.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.agent.resources.limits.memory }}
+              cpu: {{ .Values.agent.resources.limits.cpu }}
+          env:
+            - name: CONCORD_TMP_DIR
+              value: "/tmp/concord"
+            - name: CONCORD_DOCKER_LOCAL_MODE
+              value: "false"
+            - name: DOCKER_HOST
+              value: "{{ .Values.agent.dockerHost }}"
+            - name: CONCORD_CFG_FILE
+              value: "/opt/concord/conf/agent.conf"
+            - name: CONCORD_MAVEN_CFG
+              value: "/opt/concord/conf/mvn.json"
+            # TODO is there a way to avoid setting those vars?
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: USER_AGENT
+              value: "k8s-agent $(MY_POD_NAMESPACE)/$(MY_POD_NAME) @ $(MY_POD_IP)"
+      volumes:
+        - name: cfg
+          configMap:
+            name: concord-cfg
+        - name: process-tmp
+          emptyDir: {}
+        {{- if .Values.ccdMode }}
+        - name: "ccd-volume"
+          persistentVolumeClaim:
+            claimName: ccd-pvc
+        {{- end }}

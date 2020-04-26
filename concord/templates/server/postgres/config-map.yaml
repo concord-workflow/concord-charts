@@ -1,0 +1,13 @@
+{{- if eq .Values.database.type "internal" -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-config
+  labels:
+    app: postgresql
+data:
+  POSTGRES_DB: {{ .Values.database.internal.database }}
+  POSTGRES_USER: {{ .Values.database.internal.user }}
+  POSTGRES_PASSWORD: {{ .Values.database.internal.password }}
+{{- end -}}

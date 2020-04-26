@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Shell into the worker
+namespace=concord
+
+pod=$(kubectl get pods -n ${namespace} | grep agent | grep Running | awk '{ print $1 }')
+kubectl exec -it ${pod} --container dind /bin/sh -n ${namespace}

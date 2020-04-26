@@ -1,0 +1,22 @@
+{{- if eq .Values.database.type "internal" -}}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgresql-pvc
+  labels:
+    app: postgresql
+spec:
+{{- if .Values.database.storageClass }}
+{{- if (eq "-" .Values.database.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+{{- end -}}

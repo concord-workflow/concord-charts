@@ -1,0 +1,27 @@
+{{- if eq .Values.expose.type "ingress" }}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: concord-ingress
+{{- if .Values.expose.ingress.annotations }}
+{{- with .Values.expose.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- end }}
+spec:
+  {{- if .Values.expose.tls.enabled }}
+  tls:
+    - secretName: {{ .Values.expose.tls.secretName }}
+      hosts:
+        - {{ .Values.expose.ingress.host }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.expose.ingress.host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: concord-server
+          servicePort: {{ .Values.expose.port }}
+{{- end }}

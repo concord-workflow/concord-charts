@@ -1,0 +1,16 @@
+{{- if eq .Values.database.type "internal" -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  labels:
+    app: postgresql
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.database.internal.port }}
+    protocol: TCP
+  selector:
+    app: postgresql
+{{- end -}}

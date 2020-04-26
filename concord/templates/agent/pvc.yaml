@@ -1,0 +1,44 @@
+{{- if .Values.ccdMode }}
+{{- if .Values.devMode }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: concord-pv-volume
+  labels:
+    type: local
+    app: concord
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/repo"
+ claimRef:
+    name: ccd-pvc
+{{- end }}
+{{- end }}
+{{- if .Values.ccdMode }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ccd-pvc
+  labels:
+    app: concord
+spec:
+{{- if .Values.ccd.storageClass }}
+{{- if (eq "-" .Values.ccd.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+{{- end }}

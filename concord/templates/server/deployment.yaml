@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concord-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: concord-server
+  template:
+    metadata:
+      labels:
+        app: concord-server
+    spec:
+      containers:
+        - name: concord-server
+          image: {{ .Values.registry }}/concord-server:{{ .Values.version }}
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          volumeMounts:
+          - name: "cfg"
+            mountPath: "/opt/concord/conf/server.conf"
+            subPath: server.conf
+          ports:
+          - containerPort: 8001
+          env:
+          - name: CONCORD_CFG_FILE
+            value: /opt/concord/conf/server.conf
+      volumes:
+        - name: cfg
+          configMap:
+            name: server-conf

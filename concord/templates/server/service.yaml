@@ -1,0 +1,57 @@
+{{- if eq .Values.expose.type "nodePort" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: concord-server
+  labels:
+    app: concord-server
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: {{ .Values.expose.port }}
+      targetPort: 8001
+  selector:
+    app: concord-server
+{{- else if eq .Values.expose.type "loadBalancer" }}
+{{- $loadBalancer := .Values.expose.loadBalancer }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: concord-server
+  labels:
+    app: concord-server
+spec:
+  type: LoadBalancer
+  {{- with $loadBalancer.sourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if $loadBalancer.IP }}
+  loadBalancerIP: {{ $loadBalancer.IP }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.expose.port }}
+      targetPort: 8001
+  selector:
+    app: concord-server
+{{- else if eq .Values.expose.type "ingress" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: concord-server
+  labels:
+    app: concord-server
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: {{ .Values.expose.port }}
+      targetPort: 8001
+  selector:
+    app: concord-server
+{{- end }}

@@ -1,0 +1,7 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: server-conf
+data:
+{{ (tpl (.Files.Glob "files/server/server.conf").AsConfig . ) | indent 2 }}
