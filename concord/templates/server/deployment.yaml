@@ -21,6 +21,11 @@ spec:
           - name: "cfg"
             mountPath: "/opt/concord/conf/server.conf"
             subPath: server.conf
+          {{ if .Values.oidc.enabled }}
+          - name: "cfgjs"
+            mountPath: "/opt/concord/console/cfg.js"
+            subPath: cfg.js
+          {{ end }}
           ports:
           - containerPort: 8001
           env:
@@ -30,3 +35,8 @@ spec:
         - name: cfg
           configMap:
             name: server-conf
+        {{ if .Values.oidc.enabled }}
+        - name: cfgjs
+          configMap:
+            name: cfg-js
+        {{ end }}
