@@ -5,3 +5,12 @@ metadata:
   name: server-conf
 data:
 {{ (tpl (.Files.Glob "files/server/server.conf").AsConfig . ) | indent 2 }}
+{{ if .Values.oidc.enabled }}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cfg-js
+data:
+{{ (tpl (.Files.Glob "files/server/cfg.js").AsConfig .) | indent 2 }}
+{{ end }}
