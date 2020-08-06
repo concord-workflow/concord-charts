@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.concord.charts</groupId>
         <artifactId>charts</artifactId>
-        <version>1-SNAPSHOT</version>
+        <version>3-SNAPSHOT</version>
     </parent>
 
     <artifactId>concord</artifactId>
-    <name>Harbor Configuration chart</name>
+    <name>Concord chart</name>
 
     <properties>
         <root.project.basedir>${project.parent.basedir}</root.project.basedir>

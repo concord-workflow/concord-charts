@@ -37,7 +37,7 @@ spec:
             privileged: true
 
         - name: agent
-          image: {{ .Values.registry }}/concord-agent:{{ .Values.version }}
+          image: {{ .Values.registry }}/{{ .Values.agentImageName }}:{{ .Values.version }}
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           volumeMounts:
             - name: "cfg"
