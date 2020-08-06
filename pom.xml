@@ -5,7 +5,7 @@
 
     <groupId>com.concord.charts</groupId>
     <artifactId>charts</artifactId>
-    <version>1-SNAPSHOT</version>
+    <version>3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Concord Workflow</name>
@@ -71,6 +71,11 @@
                         <chartDirectory>${project.basedir}</chartDirectory>
                         <chartVersion>${project.version}</chartVersion>
                         <useLocalHelmBinary>true</useLocalHelmBinary>
+                        <uploadRepoStable>
+                            <name>concord</name>
+                            <url>https://harbor.starburstdata.net/chartrepo/starburstdata</url>
+                            <type>CHARTMUSEUM</type>
+                        </uploadRepoStable>
                     </configuration>
                 </plugin>
                 <plugin>

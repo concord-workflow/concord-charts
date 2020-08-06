@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: concord-server
-          image: {{ .Values.registry }}/concord-server:{{ .Values.version }}
+          image: {{ .Values.registry }}/{{ .Values.serverImageName }}:{{ .Values.version }}
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           volumeMounts:
           - name: "cfg"

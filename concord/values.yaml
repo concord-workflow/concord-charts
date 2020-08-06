@@ -1,6 +1,8 @@
 # Concord version
-version: 1.46.0
+version: 1.0.9
 registry: walmartlabs
+serverImageName: concord-k8s-server
+agentImageName: concord-k8s-agent
 imagePullPolicy: IfNotPresent
 
 # --------------------------------------------------------------------------------------------------------------------
