@@ -41,14 +41,14 @@ expose:
 database:
   storageClass:
   type: internal
+  superuserAvailable: "true"
+  createExtensionAvailable: "true"
   internal:
     server: "postgresql"
     port: "5432"
     user: "postgres"
     password: "q1q1q1q1"
     database: "postgres"
-    superuserAvailable: "false"
-    createExtensionAvailable: "false"
     image:
       repository: library/postgres
       tag: 10.6
@@ -61,8 +61,6 @@ database:
     user: "postgres"
     password: "q1q1q1q1"
     database: "postgres"
-    superuserAvailable: "false"
-    createExtensionAvailable: "false"
   podAnnotations: {}
 
 # --------------------------------------------------------------------------------------------------------------------
