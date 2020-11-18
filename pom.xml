@@ -5,7 +5,7 @@
 
     <groupId>com.concord.charts</groupId>
     <artifactId>charts</artifactId>
-    <version>5-SNAPSHOT</version>
+    <version>6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Concord Workflow</name>
