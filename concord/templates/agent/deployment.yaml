@@ -15,6 +15,7 @@ spec:
     spec:
       hostNetwork: {{ .Values.agent.hostNetwork }}
       containers:
+        {{- if .Values.dind.enabled }}
         - name: dind
           image: {{ .Values.dind.image.repository }}:{{ .Values.dind.image.tag }}
           command: {{ .Values.dind.image.command }}
@@ -35,6 +36,7 @@ spec:
               cpu: {{ .Values.agent.resources.limits.cpu }}
           securityContext:
             privileged: true
+        {{- end }}
 
         - name: agent
           image: {{ .Values.registry }}/{{ .Values.agentImageName }}:{{ .Values.version }}

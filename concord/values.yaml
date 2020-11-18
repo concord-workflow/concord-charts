@@ -1,6 +1,6 @@
 # Concord version
-version: 1.0.9
-registry: walmartlabs
+version: 1.0.23
+registry: concordworkflow
 serverImageName: concord-k8s-server
 agentImageName: concord-k8s-agent
 imagePullPolicy: IfNotPresent
@@ -119,6 +119,7 @@ github:
 # Probably makes more sense to hide most of this information
 
 dind:
+  enabled: false
   image:
     repository: library/docker
     tag: stable-dind
