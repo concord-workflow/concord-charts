@@ -34,6 +34,7 @@
     <properties>
         <root.project.basedir>${project.basedir}</root.project.basedir>
         <docker.registry>harbor.starburstdata.net/starburstdata</docker.registry>
+        <helm.init.add-default-repo>false</helm.init.add-default-repo>
     </properties>
 
     <build>
@@ -42,7 +43,7 @@
                 <plugin>
                     <groupId>com.kiwigrid</groupId>
                     <artifactId>helm-maven-plugin</artifactId>
-                    <version>5.5</version>
+                    <version>5.6</version>
                     <executions>
                         <execution>
                             <id>helm-init</id>
