@@ -30,3 +30,24 @@ Create chart name and version as used by the chart label.
 {{- define "concord.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Generate Docker registry secret name
+*/}}
+{{- define "registry-secret.name" -}}
+{{- printf "registry-secret-%s" (include "concord.name" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "imagePullSecret" }}
+{{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .Values.registry (printf "%s:%s" .Values.registryCredentials.username .Values.registryCredentials.password | b64enc) | b64enc }}
+{{- end }}
+
+{{/*
+Select image pull secret
+*/}}
+{{- define "imagePullSecretName" }}
+    {{- if ( .Values.registryCredentials.enabled ) }}
+        {{- print "imagePullSecrets:" }}
+        {{- printf "\n  - name: %s" (include "registry-secret.name" . ) }}
+{{- end }}
+{{- end }}

@@ -13,6 +13,7 @@ spec:
       labels:
         app: concord-server
     spec:
+      {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-server
           image: {{ .Values.registry }}/{{ .Values.serverImageName }}:{{ .Values.version }}

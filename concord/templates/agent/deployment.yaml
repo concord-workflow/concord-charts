@@ -13,6 +13,7 @@ spec:
       labels:
         app: concord-agent
     spec:
+      {{- include "imagePullSecretName" . | nindent 6 }}
       hostNetwork: {{ .Values.agent.hostNetwork }}
       containers:
         {{- if .Values.dind.enabled }}
