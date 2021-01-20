@@ -81,7 +81,7 @@ agent:
   repositories:
     - id: central
       url: https://repo1.maven.org/maven2/
-  workers: 1
+  replicas: 1
   resources:
     requests:
       cpu: 1

@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: concord-agent
-  replicas: {{ .Values.agent.workers }}
+  replicas: {{ .Values.agent.replicas }}
   template:
     metadata:
       labels:
