@@ -1,5 +1,5 @@
 # Concord version
-version: 1.0.33
+version: 1.0.46
 registry: concordworkflow
 serverImageName: concord-k8s-server
 agentImageName: concord-k8s-agent
@@ -73,6 +73,8 @@ database:
 
 server:
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
+  maxLogAge: "3 m"
+  maxStateAge: "3 m"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Agent
