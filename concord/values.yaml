@@ -84,9 +84,6 @@ agent:
   # This is when we use DinD
   dockerHost: tcp://127.0.0.1:6666
   hostNetwork: false
-  repositories:
-    - id: central
-      url: https://repo1.maven.org/maven2/
   replicas: 1
   resources:
     requests:
@@ -95,6 +92,14 @@ agent:
     limits:
       cpu: 2
       memory: "2G"
+
+#
+# Maven Repositories
+#
+maven:
+  repositories:
+    - id: central
+      url: https://repo1.maven.org/maven2/
 
 # --------------------------------------------------------------------------------------------------------------------
 # LDAP

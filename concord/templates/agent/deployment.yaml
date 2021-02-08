@@ -83,7 +83,7 @@ spec:
       volumes:
         - name: cfg
           configMap:
-            name: concord-cfg
+            name: agent-cfg
         - name: process-tmp
           emptyDir: {}
         {{- if .Values.ccdMode }}

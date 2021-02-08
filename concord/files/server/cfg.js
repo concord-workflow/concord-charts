@@ -9,7 +9,10 @@ window.concord = {
                 icon: 'github'
             }
         ]
-    },
-    loginUrl: '/api/service/oidc/auth',
-    logoutUrl: '/api/service/oidc/logout'
+    }
+
+    {{- if .Values.oidc.enabled }}
+    ,loginUrl: '/api/service/oidc/auth'
+    ,logoutUrl: '/api/service/oidc/logout'
+    {{- end}}
 };

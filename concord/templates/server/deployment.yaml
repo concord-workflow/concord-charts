@@ -19,25 +19,23 @@ spec:
           image: {{ .Values.registry }}/{{ .Values.serverImageName }}:{{ .Values.version }}
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           volumeMounts:
-          - name: "cfg"
-            mountPath: "/opt/concord/conf/server.conf"
-            subPath: server.conf
-          {{ if .Values.oidc.enabled }}
-          - name: "cfgjs"
-            mountPath: "/opt/concord/console/cfg.js"
-            subPath: cfg.js
-          {{ end }}
+            - name: cfg
+              mountPath: "/opt/concord/conf/server.conf"
+              subPath: server.conf
+            - name: cfg
+              mountPath: "/opt/concord/conf/mvn.json"
+              subPath: mvn.json
+            - name: cfg
+              mountPath: "/opt/concord/console/cfg.js"
+              subPath: cfg.js
           ports:
-          - containerPort: 8001
+            - containerPort: 8001
           env:
-          - name: CONCORD_CFG_FILE
-            value: /opt/concord/conf/server.conf
+            - name: CONCORD_CFG_FILE
+              value: /opt/concord/conf/server.conf
+            - name: CONCORD_MAVEN_CFG
+              value: "/opt/concord/conf/mvn.json"
       volumes:
         - name: cfg
           configMap:
-            name: server-conf
-        {{ if .Values.oidc.enabled }}
-        - name: cfgjs
-          configMap:
-            name: cfg-js
-        {{ end }}
+            name: server-cfg
