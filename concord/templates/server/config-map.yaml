@@ -1,16 +1,9 @@
 ---
-kind: ConfigMap
 apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: server-conf
+  name: server-cfg
 data:
 {{ (tpl (.Files.Glob "files/server/server.conf").AsConfig . ) | indent 2 }}
-{{ if .Values.oidc.enabled }}
----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: cfg-js
-data:
-{{ (tpl (.Files.Glob "files/server/cfg.js").AsConfig .) | indent 2 }}
-{{ end }}
+{{ (tpl (.Files.Glob "files/server/cfg.js").AsConfig . ) | indent 2 }}
+{{ (tpl (.Files.Glob "files/common/mvn.json").AsConfig . ) | indent 2 }}

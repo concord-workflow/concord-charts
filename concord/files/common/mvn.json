@@ -1,6 +1,6 @@
-{{- if .Values.agent.repositories }}
+{{- if .Values.maven.repositories }}
 {
-  "repositories" : {{ .Values.agent.repositories | toPrettyJson | indent 4 | trim }}
+  "repositories" : {{ .Values.maven.repositories | toPrettyJson | indent 4 | trim }}
 }
 {{- else }}
 {
