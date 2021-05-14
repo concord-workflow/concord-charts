@@ -75,6 +75,8 @@ server:
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
   maxLogAge: "3 m"
   maxStateAge: "3 m"
+  # Map of extra environment variables to pass to server
+  env: {}
 
 # --------------------------------------------------------------------------------------------------------------------
 # Agent
@@ -92,6 +94,8 @@ agent:
     limits:
       cpu: 2
       memory: "2G"
+  # Map of extra environment variables to pass to agent
+  env: {}
 
 #
 # Maven Repositories
