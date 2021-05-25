@@ -24,10 +24,6 @@ spec:
           volumeMounts:
             - name: "process-tmp"
               mountPath: "/tmp"
-            {{- if .Values.ccdMode }}
-            - name: "ccd-volume"
-              mountPath: "/repo"
-            {{- end }}
           resources:
             requests:
               memory: {{ .Values.agent.resources.requests.memory }}
@@ -90,8 +86,3 @@ spec:
             name: agent-cfg
         - name: process-tmp
           emptyDir: {}
-        {{- if .Values.ccdMode }}
-        - name: "ccd-volume"
-          persistentVolumeClaim:
-            claimName: ccd-pvc
-        {{- end }}
