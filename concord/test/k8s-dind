@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-# Shell into the worker
+# Shell into the dind 
 namespace=concord
-
-pod=$(kubectl get pods -n ${namespace} | grep agent | grep Running | awk '{ print $1 }')
+pod=agentpool-default-00000
 kubectl exec -it ${pod} --container dind /bin/sh -n ${namespace}

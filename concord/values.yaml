@@ -3,6 +3,7 @@ version: 1.85.0
 registry: walmartlabs
 serverImageName: concord-server
 agentImageName: concord-agent
+agentOperatorImageName: concord-agent-operator
 imagePullPolicy: IfNotPresent
 
 registryCredentials:
@@ -81,10 +82,11 @@ server:
 # --------------------------------------------------------------------------------------------------------------------
 
 agent:
-  # This is when we use DinD
-  dockerHost: tcp://127.0.0.1:6666
-  hostNetwork: false
-  replicas: 1
+  autoscaler:
+    enabled: false
+    initSize: 1
+    minSize: 1
+    maxSize: 10
   resources:
     requests:
       cpu: 1
@@ -95,9 +97,27 @@ agent:
   # Map of extra environment variables to pass to agent
   env: {}
 
-#
+# Probably makes more sense to hide most of this information, as it's fairly
+# coupled with the way the agents work but we'll leave it here for now.
+dind:
+  image:
+    repository: library/docker
+    tag: stable-dind
+    command: ["dockerd"]
+    args: |
+      [ "-H tcp://0.0.0.0:6666" ]
+  resources:
+    requests:
+      cpu: 1
+      memory: "2G"
+    limits:
+      cpu: 2
+      memory: "3G"
+
+# --------------------------------------------------------------------------------------------------------------------
 # Maven Repositories
-#
+# --------------------------------------------------------------------------------------------------------------------
+
 maven:
   repositories:
     - id: central
@@ -127,28 +147,12 @@ github:
   secret: ""
 
 # --------------------------------------------------------------------------------------------------------------------
-# DinD
-# --------------------------------------------------------------------------------------------------------------------
-# Probably makes more sense to hide most of this information
-
-dind:
-  enabled: false
-  image:
-    repository: library/docker
-    tag: stable-dind
-    command: ["dockerd"]
-    resources:
-      requests:
-        cpu: 1
-        memory: "2G"
-      limits:
-        cpu: 2
-        memory: "3G"
-    args: |
-      [ "-H tcp://0.0.0.0:6666" ]
-
-# --------------------------------------------------------------------------------------------------------------------
 # Concord Security
 # --------------------------------------------------------------------------------------------------------------------
+
 security:
-  clusterAdmin: true
+  # Enable this only if you need your Concord processes to modify cluster resources in any of the namespaces
+  # in the cluster. Only required if Concord is serving a role in maintaining the cluster it's running in.
+  #
+  # https://www.jeffgeerling.com/blog/2020/everyone-might-be-cluster-admin-your-kubernetes-cluster
+  clusterAdmin: false

@@ -8,6 +8,7 @@ if [ "$(uname -s)" = "Linux" ]; then
 fi
 
 URL=`minikube service concord-server --namespace concord --url | sed 's@^\* @@'`
+URL="http://localhost:80"
 
 echo "auBy4eDWrKWsyhiDp3AQiw"
 $OPEN_CMD "${URL}/#/login?useApiKey=true"
