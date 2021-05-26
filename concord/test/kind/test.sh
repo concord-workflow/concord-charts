@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOST_PORT=`minikube service concord-server --namespace concord --format "{{.IP}}:{{.Port}}" --url | sed 's@^\* @@'`
+HOST_PORT=localhost:80
 
 echo
 echo

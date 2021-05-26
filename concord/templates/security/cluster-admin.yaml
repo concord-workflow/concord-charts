@@ -11,5 +11,5 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: default
-    namespace: concord
+    namespace: {{ .Release.Namespace }}
 {{ end }}
