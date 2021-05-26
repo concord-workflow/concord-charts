@@ -21,7 +21,10 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: concord-server
-          servicePort: {{ .Values.expose.port }}
+          service:
+            name: concord-server
+            port:
+              number: {{ .Values.expose.port }}
 {{- end }}
