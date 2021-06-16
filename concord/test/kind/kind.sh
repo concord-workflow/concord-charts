@@ -47,3 +47,19 @@ docker network connect "kind" "${reg_name}" > /dev/null 2>&1 &
 
 # Deploy the nginx Ingress controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+
+echo
+
+# Wait for nginx ingress controller to be ready
+for i in {1..6}
+do
+  echo "Attempting to query nginx ingress ready status ..."
+  kubectl wait \
+    --namespace ingress-nginx \
+    --for=condition=ready pod \
+    --selector=app.kubernetes.io/component=controller \
+    --timeout=120s > /dev/null 2>&1 && break || sleep 10
+done
+
+# The validator seems to cause intermittent issues
+kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
