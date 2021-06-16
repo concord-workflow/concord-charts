@@ -72,6 +72,7 @@ database:
 
 server:
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
+  agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
   maxLogAge: "3 m"
   maxStateAge: "3 m"
   # Map of extra environment variables to pass to server
