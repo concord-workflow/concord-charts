@@ -18,7 +18,7 @@ fi
 # Create a kind cluster
 # - Configures containerd to use the local Docker registry
 # - Enables Ingress on ports 80 and 443
-cat <<EOF | kind create cluster --image kindest/node:v${k8s_version} --config=-
+cat <<EOF | kind create cluster --image kindest/node:v${k8s_version} --wait 5m --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 containerdConfigPatches:
@@ -60,6 +60,3 @@ do
     --selector=app.kubernetes.io/component=controller \
     --timeout=120s > /dev/null 2>&1 && break || sleep 10
 done
-
-# The validator seems to cause intermittent issues
-kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
