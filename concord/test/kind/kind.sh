@@ -60,3 +60,8 @@ do
     --selector=app.kubernetes.io/component=controller \
     --timeout=120s > /dev/null 2>&1 && break || sleep 10
 done
+
+if [ "${deleteWebHook}" = "true" ]
+then
+  kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+fi
