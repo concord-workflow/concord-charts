@@ -44,6 +44,7 @@ spec:
         concordCfgHash: "%%concordCfgHash%%"
     spec:
       terminationGracePeriodSeconds: 3600
+      {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: dind
           image: {{ .Values.dind.image.repository }}:{{ .Values.dind.image.tag }}

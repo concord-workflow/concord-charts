@@ -13,6 +13,7 @@ spec:
         name: concord-agent-operator
     spec:
       serviceAccountName: concord-agent-operator
+      {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-agent-operator
           image: {{ .Values.registry }}/{{ .Values.agentOperatorImageName }}:{{ .Values.version }}
