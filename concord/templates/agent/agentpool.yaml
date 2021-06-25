@@ -74,7 +74,11 @@ spec:
                   - "/hooks/preStopHook.sh"
 
         - name: agent
+          {{- if .Values.agentImageOverride }}
+          image: {{ .Values.agentImageOverride }}
+          {{- else }}
           image: {{ .Values.registry }}/{{ .Values.agentImageName }}:{{ .Values.version }}
+          {{- end }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
             - mountPath: "/opt/concord/conf/agent.conf"
