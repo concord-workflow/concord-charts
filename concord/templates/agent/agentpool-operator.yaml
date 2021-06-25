@@ -16,7 +16,11 @@ spec:
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-agent-operator
+          {{- if .Values.agentOperatorImageOverride }}
+          image: {{ .Values.agentOperatorImageOverride }}
+          {{- else }}
           image: {{ .Values.registry }}/{{ .Values.agentOperatorImageName }}:{{ .Values.version }}
+          {{- end }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
             - name: WATCH_NAMESPACE

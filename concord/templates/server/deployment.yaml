@@ -16,7 +16,11 @@ spec:
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-server
+          {{- if .Values.serverImageOverride }}
+          image: {{ .Values.serverImageOverride }}
+          {{- else }}
           image: {{ .Values.registry }}/{{ .Values.serverImageName }}:{{ .Values.version }}
+          {{- end }}
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           volumeMounts:
             - name: cfg

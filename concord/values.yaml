@@ -2,8 +2,11 @@
 version: 1.86.2
 registry: walmartlabs
 serverImageName: concord-server
+# serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
 agentImageName: concord-agent
+# agentImageOverride: myharbor.io/myproject/my-k8s-agent:myTag
 agentOperatorImageName: concord-agent-operator
+# agentOperatorImageOverride: myharbor.io/myproject/my-k8s-agent-operator:myTag
 imagePullPolicy: IfNotPresent
 
 registryCredentials:
