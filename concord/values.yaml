@@ -76,8 +76,8 @@ database:
 server:
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
   agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
-  maxLogAge: "3 m"
-  maxStateAge: "3 m"
+  maxLogAge: "7 days"
+  maxStateAge: "7 days"
   # Map of extra environment variables to pass to server
   env: {}
 
@@ -160,3 +160,12 @@ security:
   #
   # https://www.jeffgeerling.com/blog/2020/everyone-might-be-cluster-admin-your-kubernetes-cluster
   clusterAdmin: false
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Specifies annotations for this service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: concord-sa

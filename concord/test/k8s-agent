@@ -3,4 +3,4 @@
 # Shell into the agent
 namespace=concord
 pod=agentpool-default-00000
-kubectl exec -it ${pod} --container agent /bin/sh -n ${namespace}
+kubectl exec -it ${pod} --container agent /bin/bash -n ${namespace}

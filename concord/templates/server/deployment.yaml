@@ -13,6 +13,7 @@ spec:
       labels:
         app: concord-server
     spec:
+      serviceAccountName: {{ template "concord.serviceAccountName" . }}            
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-server

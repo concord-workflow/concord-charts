@@ -43,6 +43,7 @@ spec:
         poolName: "%%poolName%%"
         concordCfgHash: "%%concordCfgHash%%"
     spec:
+      serviceAccountName: {{ template "concord.serviceAccountName" . }}
       terminationGracePeriodSeconds: 3600
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
