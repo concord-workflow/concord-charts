@@ -2,8 +2,8 @@ name: Release Charts
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - *
     paths:
       - "concord/**"
 
@@ -29,7 +29,7 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@a3454e46a6f5ac4811069a381e646961dda2e1bf # pin@v1.4.0
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"        
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Login to GitHub Container Registry
         run: |
