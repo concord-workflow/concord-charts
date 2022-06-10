@@ -26,6 +26,9 @@ jobs:
         with:
           version: v3.8.1
 
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@a3454e46a6f5ac4811069a381e646961dda2e1bf # pin@v1.4.0
+
       - name: Login to GitHub Container Registry
         run: |
           helm registry login --username ${GITHUB_ACTOR} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
