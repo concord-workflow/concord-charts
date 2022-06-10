@@ -28,4 +28,4 @@ jobs:
 
       - name: Publish Helm Charts
         run: |
-          helm push concord-${GITHUB_REF_NAME}.tgz "oci://${CONTAINER_REGISTRY}"
+          helm push concord-${GITHUB_REF_NAME}.tgz oci://ghcr.io/${GITHUB_REPOSITORY}
