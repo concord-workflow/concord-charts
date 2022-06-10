@@ -8,8 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Aetion Common
-        uses: aetion/actions@main
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Helm Setup
         uses: azure/setup-helm@v1
