@@ -2,7 +2,7 @@
 # Concord
 # --------------------------------------------------------------------------------------------------------------------
 
-version: 1.95.0
+version: 1.98.1
 registry: walmartlabs
 serverImageName: concord-server
 # serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
