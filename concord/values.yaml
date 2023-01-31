@@ -148,6 +148,22 @@ ldap:
 
 oidc:
   enabled: false
+  
+#  scopes: ["openid", "profile", "email", "groups"]
+
+#  roleMapping:
+#    concordAdmin:
+#      source: ["groups.admin.*", "groups.local-admin.*"]
+#    concordAdmin2:
+#      source: ["groups.admin2.*", "groups.local-admin2.*"]
+
+#  teamMapping:
+#    00000000-0000-0000-0000-000000000000:
+#      source: ["groups.dev.*", "groups..*"]
+#      role: "MEMBER"
+#    100000000-0000-0000-0000-00000000000:
+#      source: ["groups.dev.*", "groups..*"]
+#      role: "OWNER"
 
 # --------------------------------------------------------------------------------------------------------------------
 # GitHub
