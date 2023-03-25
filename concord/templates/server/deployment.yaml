@@ -13,7 +13,7 @@ spec:
       labels:
         app: concord-server
     spec:
-      serviceAccountName: {{ template "concord.serviceAccountName" . }}            
+      serviceAccountName: {{ .Values.serviceAccount.name }}            
       {{- include "imagePullSecretName" . | nindent 6 }}
       # https://medium.com/@xcoulon/initializing-containers-in-order-with-kubernetes-18173b9cc222
       initContainers:
