@@ -1,0 +1,187 @@
+# --------------------------------------------------------------------------------------------------------------------
+# Concord
+# --------------------------------------------------------------------------------------------------------------------
+
+version: 1.98.1
+registry: walmartlabs
+serverImageName: concord-server
+# serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
+agentImageName: concord-agent
+# agentImageOverride: myharbor.io/myproject/my-k8s-agent:myTag
+agentOperatorImageName: concord-agent-operator
+# agentOperatorImageOverride: myharbor.io/myproject/my-k8s-agent-operator:myTag
+imagePullPolicy: IfNotPresent
+
+# --------------------------------------------------------------------------------------------------------------------
+# Registry
+# --------------------------------------------------------------------------------------------------------------------
+
+registryCredentials:
+  enabled: false
+  username: ""
+  password: ""
+
+# --------------------------------------------------------------------------------------------------------------------
+# Ingress/Nodeport/ClusterIP
+# --------------------------------------------------------------------------------------------------------------------
+
+expose:
+  port: 8001
+  type: ingress
+  tls:
+    enabled: true
+    secretName: concord-tls
+  ingress:
+    host: concord.yourdomain.com
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+  nodePort:
+    ports:
+      http:
+        port: 8001
+  loadBalancer:
+    IP: ""
+    ports:
+      httpPort: 8001
+      httpsPort: 8443
+    annotations: {}
+    sourceRanges: []
+
+# --------------------------------------------------------------------------------------------------------------------
+# Database/Postgres
+# --------------------------------------------------------------------------------------------------------------------
+
+database:
+  storageClass:
+  type: internal
+  superuserAvailable: "true"
+  createExtensionAvailable: "true"
+  internal:
+    server: "postgresql"
+    port: "5432"
+    user: "postgres"
+    password: "q1q1q1q1"
+    database: "postgres"
+    image:
+      repository: library/postgres
+      tag: 10.6
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  external:
+    server: "192.168.0.1"
+    port: "5432"
+    user: "postgres"
+    password: "q1q1q1q1"
+    database: "postgres"
+  podAnnotations: {}
+
+# --------------------------------------------------------------------------------------------------------------------
+# Server
+# --------------------------------------------------------------------------------------------------------------------
+
+server:
+  adminToken: "auBy4eDWrKWsyhiDp3AQiw"
+  agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
+  maxLogAge: "7 days"
+  maxStateAge: "7 days"
+  # Map of extra environment variables to pass to server
+  env: {}
+
+# --------------------------------------------------------------------------------------------------------------------
+# Agent
+# --------------------------------------------------------------------------------------------------------------------
+
+agent:
+  pool:
+    serviceAccount:
+      name: concord-sa
+      annotations: 
+        foo: bar
+
+# Probably makes more sense to hide most of this information, as it's fairly
+# coupled with the way the agents work but we'll leave it here for now.
+dind:
+  image:
+    repository: library/docker
+    tag: stable-dind
+    command: ["dockerd"]
+    args: |
+      [ "-H tcp://0.0.0.0:6666" ]
+  resources:
+    requests:
+      cpu: 1
+      memory: "2G"
+    limits:
+      cpu: 2
+      memory: "3G"
+
+# --------------------------------------------------------------------------------------------------------------------
+# Maven Repositories
+# --------------------------------------------------------------------------------------------------------------------
+
+maven:
+  repositories:
+    - id: central
+      url: https://repo1.maven.org/maven2/
+
+# --------------------------------------------------------------------------------------------------------------------
+# LDAP
+# --------------------------------------------------------------------------------------------------------------------
+
+ldap:
+  enabled: false
+
+# --------------------------------------------------------------------------------------------------------------------
+# OIDC
+# --------------------------------------------------------------------------------------------------------------------
+
+oidc:
+  enabled: false
+  
+#  scopes: ["openid", "profile", "email", "groups"]
+
+#  roleMapping:
+#    concordAdmin:
+#      source: ["groups.admin.*", "groups.local-admin.*"]
+#    concordAdmin2:
+#      source: ["groups.admin2.*", "groups.local-admin2.*"]
+
+#  teamMapping:
+#    00000000-0000-0000-0000-000000000000:
+#      source: ["groups.dev.*", "groups..*"]
+#      role: "MEMBER"
+#    100000000-0000-0000-0000-00000000000:
+#      source: ["groups.dev.*", "groups..*"]
+#      role: "OWNER"
+
+# --------------------------------------------------------------------------------------------------------------------
+# GitHub
+# --------------------------------------------------------------------------------------------------------------------
+
+github:
+  enabled: false
+  domain: github.com
+  secret: ""
+
+# --------------------------------------------------------------------------------------------------------------------
+# Concord Security
+# --------------------------------------------------------------------------------------------------------------------
+
+security:
+  # Enable this only if you need your Concord processes to modify cluster resources in any of the namespaces
+  # in the cluster. Only required if Concord is serving a role in maintaining the cluster it's running in.
+  #
+  # https://www.jeffgeerling.com/blog/2020/everyone-might-be-cluster-admin-your-kubernetes-cluster
+  clusterAdmin: false
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Specifies annotations for this service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: concord-sa
+
