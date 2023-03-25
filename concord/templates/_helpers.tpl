@@ -51,14 +51,3 @@ Select image pull secret
         {{- printf "\n  - name: %s" (include "registry-secret.name" . ) }}
 {{- end }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "concord.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "concord.fullname" .) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
