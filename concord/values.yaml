@@ -93,22 +93,6 @@ server:
 # Agent
 # --------------------------------------------------------------------------------------------------------------------
 
-agent:
-  autoscaler:
-    enabled: false
-    initSize: 1
-    minSize: 1
-    maxSize: 10
-  resources:
-    requests:
-      cpu: 1
-      memory: "1G"
-    limits:
-      cpu: 2
-      memory: "2G"
-  # Map of extra environment variables to pass to agent
-  env: {}
-
 # Probably makes more sense to hide most of this information, as it's fairly
 # coupled with the way the agents work but we'll leave it here for now.
 dind:
