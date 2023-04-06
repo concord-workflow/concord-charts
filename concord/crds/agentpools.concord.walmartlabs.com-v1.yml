@@ -43,9 +43,8 @@ spec:
               decrementThresholdFactor:
                 type: number
               queueSelector:
-                additionalProperties:
-                  type: object
                 type: object
+                x-kubernetes-preserve-unknown-fields: true
               configMap:
                 properties:
                   apiVersion:
