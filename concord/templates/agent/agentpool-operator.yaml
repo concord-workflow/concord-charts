@@ -12,7 +12,7 @@ spec:
       labels:
         name: concord-agent-operator
     spec:
-      serviceAccountName: concord-agent-operator
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-agent-operator
