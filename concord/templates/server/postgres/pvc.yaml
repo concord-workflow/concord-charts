@@ -18,5 +18,9 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
+      {{- if .Values.database.storageSize }}
+      storage: "{{ .Values.database.storageSize }}"
+      {{- else }}
       storage: 2Gi
+      {{- end }}
 {{- end -}}
