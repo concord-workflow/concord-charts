@@ -14,6 +14,7 @@ spec:
       labels:
         app: postgresql
     spec:
+      {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: postgresql
           image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
