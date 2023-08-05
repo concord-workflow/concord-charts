@@ -1,3 +1,4 @@
+{{- if eq .Values.server.type "internal" -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -7,3 +8,4 @@ data:
 {{ (tpl (.Files.Glob "files/server/server.conf").AsConfig . ) | indent 2 }}
 {{ (tpl (.Files.Glob "files/server/cfg.js").AsConfig . ) | indent 2 }}
 {{ (tpl (.Files.Glob "files/common/mvn.json").AsConfig . ) | indent 2 }}
+{{- end -}}

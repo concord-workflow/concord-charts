@@ -82,6 +82,7 @@ database:
 # --------------------------------------------------------------------------------------------------------------------
 
 server:
+  type: internal
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
   agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
   maxLogAge: "7 days"
