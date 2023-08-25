@@ -4,6 +4,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgresql
+  {{- if .Values.database.internal.deploymentAnnotations }}
+  annotations:
+    {{- toYaml .Values.database.internal.deploymentAnnotations | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
   selector:
@@ -13,6 +17,10 @@ spec:
     metadata:
       labels:
         app: postgresql
+      {{- if .Values.database.internal.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.database.internal.podAnnotations | nindent 8 }}
+      {{- end }}
     spec:
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
@@ -31,4 +39,16 @@ spec:
         - name: postgresql-volume
           persistentVolumeClaim:
             claimName: postgresql-pvc
+      {{- with .Values.database.internal.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.database.internal.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.database.internal.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end -}}
