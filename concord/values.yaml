@@ -66,6 +66,8 @@ database:
     image:
       repository: library/postgres
       tag: 10.6
+    deploymentAnnotations: {}
+    podAnnotations: {}
     nodeSelector: {}
     tolerations: []
     affinity: {}
@@ -178,3 +180,13 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: concord-sa
+
+# --------------------------------------------------------------------------------------------------------------------
+# Others
+# --------------------------------------------------------------------------------------------------------------------
+
+deploymentAnnotations: {}
+podAnnotations: {}
+nodeSelector: {}
+affinity: {}
+tolerations: []
