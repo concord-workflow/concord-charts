@@ -66,6 +66,7 @@ database:
     image:
       repository: library/postgres
       tag: 10.6
+    resources: {}
     deploymentAnnotations: {}
     podAnnotations: {}
     nodeSelector: {}
@@ -184,6 +185,9 @@ serviceAccount:
 # --------------------------------------------------------------------------------------------------------------------
 # Others
 # --------------------------------------------------------------------------------------------------------------------
+
+agentOperatorResources: {}
+serverResources: {}
 
 deploymentAnnotations: {}
 podAnnotations: {}
