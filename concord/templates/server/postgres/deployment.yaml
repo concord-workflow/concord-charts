@@ -35,6 +35,10 @@ spec:
           volumeMounts:
             - mountPath: /concord/postgresql
               name: postgresql-volume
+          {{- if .Values.database.internal.resources }}
+          resources:
+            {{- toYaml .Values.database.internal.resources | nindent 12 }}
+          {{- end }}
       volumes:
         - name: postgresql-volume
           persistentVolumeClaim:
