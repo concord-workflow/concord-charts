@@ -25,10 +25,12 @@ spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}            
       {{- include "imagePullSecretName" . | nindent 6 }}
       # https://medium.com/@xcoulon/initializing-containers-in-order-with-kubernetes-18173b9cc222
+      {{ - if eq .Values.database.type "internal" - }}
       initContainers:
       - name: postgres-ready
         image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
-        command: ['sh', '-c', 'until pg_isready -h postgresql -p 5432; do echo waiting for database; sleep 2; done; sleep 10;']      
+        command: ['sh', '-c', 'until pg_isready -h postgresql -p 5432; do echo waiting for database; sleep 2; done; sleep 10;']
+      {{- end -}}
       containers:
         - name: concord-server
           {{- if .Values.serverImageOverride }}
