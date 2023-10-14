@@ -15,4 +15,8 @@ window.concord = {
     ,loginUrl: '/api/service/oidc/auth'
     ,logoutUrl: '/api/service/oidc/logout'
     {{- end}}
+
+    {{- if .Values.oidc.defaultProcessListColumns }}
+        ,processListColumns: {{toJson .Values.oidc.defaultProcessListColumns}}
+    {{- end}}
 };
