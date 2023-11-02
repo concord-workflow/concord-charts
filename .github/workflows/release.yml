@@ -26,10 +26,12 @@ jobs:
       - name: Lint Helm Charts
         run: |
           helm lint concord/
+          helm lint mica/
 
       - name: Package Helm Charts
         run: |
           helm package concord/ --version ${GITHUB_REF_NAME}
+          helm package mica/ --version ${GITHUB_REF_NAME}
 
       - name: Login to GitHub Container Registry
         run: |
@@ -38,3 +40,4 @@ jobs:
       - name: Publish Helm Charts
         run: |
           helm push concord-${GITHUB_REF_NAME}.tgz oci://ghcr.io/${GITHUB_REPOSITORY}
+          helm push mica-${GITHUB_REF_NAME}.tgz oci://ghcr.io/${GITHUB_REPOSITORY}

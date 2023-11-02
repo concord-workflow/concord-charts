@@ -1,0 +1,30 @@
+{{- if eq .Values.expose.type "ingress" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mica-ingress
+{{- if .Values.expose.ingress.annotations }}
+{{- with .Values.expose.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- end }}
+spec:
+  {{- if .Values.expose.tls.enabled }}
+  tls:
+    - secretName: {{ .Values.expose.tls.secretName }}
+      hosts:
+        - {{ .Values.expose.ingress.host }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.expose.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mica-server
+                port:
+                  number: {{ .Values.expose.port }}
+{{- end }}
