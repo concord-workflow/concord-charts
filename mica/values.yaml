@@ -56,3 +56,7 @@ oidc:
   authServerUrl: https://foo
   clientId: foobar
   credentialsSecret: s3cr3t
+
+concord:
+  baseUrl: "https://concord.example.org"
+  apiKey: "foobar"

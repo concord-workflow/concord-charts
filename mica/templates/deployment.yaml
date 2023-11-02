@@ -36,6 +36,10 @@ spec:
               value: "{{ .Values.oidc.clientId }}"
             - name: QUARKUS_OIDC_CREDENTIALS_SECRET
               value: "{{ .Values.oidc.credentialsSecret }}"
+            - name: MICA_CONCORD_BASE_URL
+              value: "{{ .Values.concord.baseUrl }}"
+            - name: MICA_CONCORD_API_KEY
+              value: "{{ .Values.concord.apiKey }}" # TODO move to a secret
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
