@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mica-server
+  {{- if .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml .Values.deploymentAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mica-server
+  template:
+    metadata:
+      labels:
+        app: mica-server
+      {{- if .Values.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: mica-server
+          image: "{{ .Values.registry }}/{{ .Values.serverImageName }}:{{ .Values.version }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: QUARKUS_OIDC_AUTHENTICATION_FORCE_REDIRECT_HTTPS_SCHEME
+              value: "true"
+            - name: QUARKUS_OIDC_AUTH_SERVER_URL
+              value: "{{ .Values.oidc.authServerUrl }}"
+            - name: QUARKUS_OIDC_CLIENT_ID
+              value: "{{ .Values.oidc.clientId }}"
+            - name: QUARKUS_OIDC_CREDENTIALS_SECRET
+              value: "{{ .Values.oidc.credentialsSecret }}"
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
