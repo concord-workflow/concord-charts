@@ -31,7 +31,7 @@ expose:
   type: ingress
   tls:
     enabled: true
-    secretName: mica-tls
+    secretName: wildcard-tls
   ingress:
     host: mica.yourdomain.com
     annotations:
