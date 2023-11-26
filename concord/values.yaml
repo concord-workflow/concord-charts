@@ -189,6 +189,7 @@ serviceAccount:
 mica:
   # should only be enabled when using a concord-server Docker image that includes the Mica plugin
   enabled: false
+  sidecarImage: "concordworkflow/mica-sidecar:initial"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Others
