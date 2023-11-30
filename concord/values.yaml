@@ -90,6 +90,8 @@ server:
   agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
   maxLogAge: "7 days"
   maxStateAge: "7 days"
+  maxStalledAge: "1 minute"
+  
   # Map of extra environment variables to pass to server
   env: {}
 
