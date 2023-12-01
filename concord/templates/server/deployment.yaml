@@ -64,6 +64,13 @@ spec:
             {{- end }}
           ports:
             - containerPort: 8001
+          readinessProbe:
+            httpGet:
+              port: 8001
+              path: /api/v1/server/ping
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 5
           env:
             - name: CONCORD_CFG_FILE
               value: /opt/concord/conf/server.conf
