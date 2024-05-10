@@ -91,6 +91,7 @@ server:
   maxLogAge: "7 days"
   maxStateAge: "7 days"
   maxStalledAge: "1 minute"
+  sessionTimeout: "3 hours"
   
   # Map of extra environment variables to pass to server
   env: {}
