@@ -1,0 +1,22 @@
+{{- if .Values.server.serviceMonitor.enabled -}}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: concord-server
+  labels:
+    app: concord-server
+{{- with .Values.server.serviceMonitor.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.server.serviceMonitor.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: concord-server
+  endpoints:
+    - port: http
+{{- end }}
