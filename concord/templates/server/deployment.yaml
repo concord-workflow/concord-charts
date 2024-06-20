@@ -29,7 +29,7 @@ spec:
       {{- if eq .Values.database.type "internal" }}
         - name: postgres-ready
           image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
-          command: [ 'sh', '-c', 'until pg_isready -h postgresql -p 5432; do echo waiting for database; sleep 2; done; sleep 10;' ]
+          command: [ 'sh', '-c', 'until pg_isready -h postgresql -p 5432; do echo waiting for database; sleep 1; done; sleep 5;' ]
       {{- end }}
       {{- if .Values.mica.enabled }}
         - name: mica-sidecar
@@ -72,6 +72,39 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 5
           env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: DB_PASSWORD
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: ADMIN_TOKEN
+            - name: AGENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: AGENT_TOKEN
+            - name: LDAP_SYSTEM_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: LDAP_SYSTEM_PASSWORD
+                  optional: true
+            - name: GITHUB_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: GITHUB_SECRET
+                  optional: true
+            - name: GIT_OAUTH
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: GIT_OAUTH
+                  optional: true
             - name: CONCORD_CFG_FILE
               value: /opt/concord/conf/server.conf
             - name: CONCORD_MAVEN_CFG
