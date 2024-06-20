@@ -1,6 +1,6 @@
 # Concord Helm Chart
 
-This is the official Helm chart for [Concord][1]. Concord is the orchestration engine that connects different systems together using scenarios and plugins created by users.
+This is a Helm chart for [Concord][1]. Concord is the orchestration engine that connects different systems together using scenarios and plugins created by users.
 
 ## Usage
 
