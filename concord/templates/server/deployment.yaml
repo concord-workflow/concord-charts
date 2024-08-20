@@ -77,11 +77,21 @@ spec:
                 secretKeyRef:
                   name: concord-server-credentials
                   key: DB_PASSWORD
-            - name: DB_PASSWORD_BASE64
+            - name: SERVER_PASSWORD_BASE64
               valueFrom:
                 secretKeyRef:
                   name: concord-server-credentials
-                  key: DB_PASSWORD_BASE64
+                  key: SERVER_PASSWORD_BASE64
+            - name: SECRET_STORE_SALT_BASE64
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: SECRET_STORE_SALT_BASE64
+            - name: PROJECT_SECRET_SALT_BASE64
+              valueFrom:
+                secretKeyRef:
+                  name: concord-server-credentials
+                  key: PROJECT_SECRET_SALT_BASE64
             - name: ADMIN_TOKEN
               valueFrom:
                 secretKeyRef:
