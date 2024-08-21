@@ -31,14 +31,15 @@ spec:
           image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
           command: [ 'sh', '-c', 'until pg_isready -h postgresql -p 5432; do echo waiting for database; sleep 1; done; sleep 5;' ]
       {{- end }}
-      {{- if .Values.mica.enabled }}
-        - name: mica-sidecar
-          image: {{ .Values.mica.sidecarImage }}
-          command: [ 'sh', '-c', 'ls /mica/ && cp /dist/* /mica/' ]
-          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+      {{- range $index, $sidecar := .Values.sidecars }}
+      {{- if $sidecar.enabled }}
+        - name: {{ $sidecar.name }}
+          image: {{ $sidecar.image }}
+          command: [ 'sh', '-c', 'ls /{{ $sidecar.name }}/ && cp /dist/* /{{ $sidecar.name }}/' ]
           volumeMounts:
-            - name: mica-jars
-              mountPath: /mica/
+            - name: {{ $sidecar.name }}-jars
+              mountPath: /{{ $sidecar.name }}/
+      {{- end }}
       {{- end }}
       containers:
         - name: concord-server
@@ -58,9 +59,11 @@ spec:
             - name: cfg
               mountPath: "/opt/concord/console/cfg.js"
               subPath: cfg.js
-            {{- if .Values.mica.enabled }}
-            - name: mica-jars
-              mountPath: /mica/
+            {{- range $index, $sidecar := .Values.sidecars }}
+            {{- if $sidecar.enabled }}
+            - name: {{ $sidecar.name }}-jars
+              mountPath: {{ $sidecar.name }}
+            {{- end }}
             {{- end }}
           ports:
             - containerPort: 8001
@@ -124,10 +127,12 @@ spec:
               value: /opt/concord/conf/server.conf
             - name: CONCORD_MAVEN_CFG
               value: "/opt/concord/conf/mvn.json"
-            {{- if .Values.mica.enabled }}
             - name: EXTRA_CLASSPATH
-              value: "/mica/*"
-            {{- end }}
+              value: "{{- range $index, $sidecar := .Values.sidecars -}}
+                      {{- if $sidecar.enabled -}}
+                      {{- if $index }}:{{ end }}/{{ $sidecar.name }}/*
+                      {{- end -}}
+                      {{- end }}"
             {{- range $key, $val := .Values.server.env }}
             - name: {{ $key }}
               value: {{ $val | quote }}
@@ -140,9 +145,11 @@ spec:
         - name: cfg
           configMap:
             name: server-cfg
-        {{- if .Values.mica.enabled }}
-        - name: mica-jars
+        {{- range $s := .Values.sidecars }}
+        {{- if $s.enabled }}
+        - name: {{ $s.name }}-jars
           emptyDir: { }
+        {{- end }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
