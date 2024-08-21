@@ -2,7 +2,7 @@
 # Concord
 # --------------------------------------------------------------------------------------------------------------------
 
-version: 2.13.0
+version: 2.15.0
 registry: walmartlabs
 serverImageName: concord-server
 # serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
@@ -190,13 +190,16 @@ serviceAccount:
   name: concord-sa
 
 # --------------------------------------------------------------------------------------------------------------------
-# Mica
+# Sidecars
 # --------------------------------------------------------------------------------------------------------------------
 
-mica:
-  # should only be enabled when using a concord-server Docker image that includes the Mica plugin
-  enabled: false
-  sidecarImage: "concordworkflow/mica-sidecar:initial"
+sidecars:
+  - name: mica
+    image: "concordworkflow/mica-sidecar:47c8c3a"
+    enabled: false
+  - name: other
+    image: "other"
+    enabled: false
 
 # --------------------------------------------------------------------------------------------------------------------
 # Others
