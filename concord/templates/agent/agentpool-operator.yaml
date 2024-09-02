@@ -61,6 +61,16 @@ spec:
               {{ end }}
             - name: CONCORD_API_TOKEN
               value: {{ .Values.server.agentToken }}
+              {{ if .Values.agentOperator.monitoring.enabled }}
+            - name: ORG_NAME
+              value: {{ .Values.agentOperator.monitoring.org }}
+            - name: STORE_NAME
+              value: {{ .Values.agentOperator.monitoring.storeName }}
+            - name: CLUSTER_ALIAS
+              value: {{ .Values.agentOperator.monitoring.clusterAlias }}
+            - name: VERSION
+              value: {{ .Values.agentOperatorImageOverride | default .Values.agentOperatorImageName }}
+              {{ end }}
           {{- if .Values.agentOperatorResources }}
           resources:
             {{- toYaml .Values.agentOperatorResources | nindent 12 }}

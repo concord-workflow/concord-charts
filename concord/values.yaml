@@ -96,9 +96,16 @@ server:
     enabled: false # enable to create a monitoring.coreos.com/v1 ServiceMonitor for the server with the given labels
     labels: {}
     annotations: {}
-  
+
   # Map of extra environment variables to pass to server
   env: {}
+
+agentOperator:
+  monitoring:
+    enabled: false
+    org: "Default"
+    storeName: "concord-agents"
+    clusterAlias: "local"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Agent
@@ -143,7 +150,7 @@ ldap:
 
 oidc:
   enabled: false
-  
+
 #  scopes: ["openid", "profile", "email", "groups"]
 
 #  roleMapping:
