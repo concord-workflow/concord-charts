@@ -100,6 +100,9 @@ server:
   # Map of extra environment variables to pass to server
   env: {}
 
+agent:
+  readTimeout: "10 seconds"
+
 agentOperator:
   monitoring:
     enabled: false
