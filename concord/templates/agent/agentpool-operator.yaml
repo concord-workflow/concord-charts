@@ -20,7 +20,7 @@ spec:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccount.name }}
+      serviceAccountName: concord-agent-operator
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-agent-operator
