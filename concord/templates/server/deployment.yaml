@@ -77,8 +77,6 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 5
           env:
-            - name: CONCORD_JAVA_OPTS
-              value: "-XX:MaxRAMPercentage=80 -Djava.io.tmpdir=/opt/concord/tmp"
             - name: CONCORD_TMP_DIR
               value: "/opt/concord/tmp"
             - name: DB_PASSWORD
