@@ -50,6 +50,8 @@ spec:
           {{- end }}
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           volumeMounts:
+            - name: concord-server-volume
+              mountPath: /opt/concord/tmp
             - name: cfg
               mountPath: "/opt/concord/conf/server.conf"
               subPath: server.conf
@@ -75,6 +77,10 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 5
           env:
+            - name: CONCORD_JAVA_OPTS
+              value: "-XX:MaxRAMPercentage=80 -Djava.io.tmpdir=/opt/concord/tmp"
+            - name: CONCORD_TMP_DIR
+              value: "/opt/concord/tmp"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -142,6 +148,9 @@ spec:
             {{- toYaml .Values.serverResources | nindent 12 }}
           {{- end }}
       volumes:
+        - name: concord-server-volume
+          emptyDir:
+            sizeLimit: {{ .Values.server.tmpDirSizeLimit }}
         - name: cfg
           configMap:
             name: server-cfg
