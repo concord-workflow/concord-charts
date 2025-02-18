@@ -92,6 +92,7 @@ server:
   maxStateAge: "7 days"
   maxStalledAge: "1 minute"
   sessionTimeout: "3 hours"
+  tmpDirSizeLimit: "16Gi"
   serviceMonitor:
     enabled: false # enable to create a monitoring.coreos.com/v1 ServiceMonitor for the server with the given labels
     labels: {}
