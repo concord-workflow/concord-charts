@@ -86,6 +86,7 @@ database:
 
 server:
   type: internal
+  replicaCount: 1
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
   agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
   maxLogAge: "7 days"

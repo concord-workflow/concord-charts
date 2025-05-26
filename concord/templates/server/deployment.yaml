@@ -9,7 +9,7 @@ metadata:
     {{- toYaml .Values.deploymentAnnotations | nindent 4 }}
   {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.server.replicaCount }}
   selector:
     matchLabels:
       app: concord-server
