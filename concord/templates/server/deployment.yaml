@@ -141,7 +141,7 @@ spec:
             - name: {{ $key }}
               value: {{ $val | quote }}
             {{- end }}
-            {{- if .Values.server.env }}
+            {{- if .Values.server.extraEnv }}
             {{- toYaml .Values.server.extraEnv | nindent 12 }}
             {{- end}}
           {{- if .Values.serverResources }}
