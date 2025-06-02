@@ -100,7 +100,12 @@ server:
     annotations: {}
 
   # Map of extra environment variables to pass to server
+  # (deprecated in favor of server.extraEnv)
   env: {}
+  # LIST of extra environment variables to pass to server in the regular template.spec.containers[].env format
+  extraEnv: []
+  # MAP of extra secrets
+  extraSecrets: {}
 
 agent:
   readTimeout: "10 seconds"
