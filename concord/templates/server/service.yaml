@@ -12,6 +12,7 @@ spec:
   ports:
     - name: http
       port: {{ .Values.expose.port }}
+      nodePort: {{ .Values.expose.nodePort.ports.http.port }}
       targetPort: 8001
     - name: debug
       port: 5005
