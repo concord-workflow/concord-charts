@@ -61,6 +61,11 @@ spec:
             - name: cfg
               mountPath: "/opt/concord/console/cfg.js"
               subPath: cfg.js
+            {{- if .Values.github.appInstallation }}{{- if .Values.github.appInstallation.privateKeysSecret }}
+            - name: github-app-keys
+              mountPath: /opt/concord/conf/github-app-keys
+              readOnly: true
+            {{- end }}{{- end }}
             {{- range $index, $sidecar := .Values.sidecars }}
             {{- if $sidecar.enabled }}
             - name: {{ $sidecar.name }}-jars
@@ -155,6 +160,11 @@ spec:
         - name: cfg
           configMap:
             name: server-cfg
+        {{- if .Values.github.appInstallation }}{{- if .Values.github.appInstallation.privateKeysSecret }}
+        - name: github-app-keys
+          secret:
+            secretName: {{ .Values.github.appInstallation.privateKeysSecret }}
+        {{- end }}{{- end }}
         {{- range $s := .Values.sidecars }}
         {{- if $s.enabled }}
         - name: {{ $s.name }}-jars
