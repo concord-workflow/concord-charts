@@ -111,6 +111,7 @@ agent:
   readTimeout: "10 seconds"
 
 agentOperator:
+  enabled: true
   monitoring:
     enabled: false
     org: "Default"
