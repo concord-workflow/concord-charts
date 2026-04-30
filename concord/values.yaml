@@ -185,6 +185,26 @@ github:
   enabled: false
   domain: github.com
   secret: ""
+  appInstallation:
+    enabled: false
+    # Name of a Secret containing private key PEM files for GITHUB_APP_INSTALLATION auth entries
+    # privateKeysSecret: "my-github-app-keys"
+    # httpClientTimeout: "30 seconds"
+    # systemAuthCacheDuration: "50 minutes"
+    # systemAuthCacheMaxWeight: 10240
+    auth: []
+    # - id: "my-gh-app"
+    #   type: "GITHUB_APP_INSTALLATION"
+    #   urlPattern: "(?<baseUrl>github.com)"
+    #   clientId: "12345"
+    #   privateKeyFile: "my-app.pem"  # key name in privateKeysSecret
+    #   apiUrl: "https://api.github.com"
+    #   username: "x-access-token"
+    # - id: "my-oauth"
+    #   type: "OAUTH_TOKEN"
+    #   urlPattern: "(?<baseUrl>github.com)"
+    #   token: "ghp_xxx"
+    #   apiUrl: "https://api.github.com"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Concord Security
