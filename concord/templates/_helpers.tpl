@@ -32,6 +32,25 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Common labels configured by chart consumers.
+*/}}
+{{- define "concord.commonLabels" -}}
+{{- with .Values.commonLabels -}}
+{{ toYaml . }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Metadata labels block for resources that do not already define labels.
+*/}}
+{{- define "concord.commonMetadataLabels" -}}
+{{- with .Values.commonLabels -}}
+labels:
+{{- toYaml . | nindent 2 }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Generate Docker registry secret name
 */}}
 {{- define "registry-secret.name" -}}

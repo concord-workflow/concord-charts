@@ -4,6 +4,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: server-cfg
+{{ include "concord.commonMetadataLabels" . | indent 2 }}
 data:
 {{ (tpl (.Files.Glob "files/server/server.conf").AsConfig . ) | indent 2 }}
 {{ (tpl (.Files.Glob "files/server/cfg.js").AsConfig . ) | indent 2 }}

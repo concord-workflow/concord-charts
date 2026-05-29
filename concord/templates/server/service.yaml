@@ -7,6 +7,7 @@ metadata:
   name: concord-server
   labels:
     app: concord-server
+    {{- include "concord.commonLabels" . | nindent 4 }}
 spec:
   type: NodePort
   ports:
@@ -28,6 +29,7 @@ metadata:
   name: concord-server
   labels:
     app: concord-server
+    {{- include "concord.commonLabels" . | nindent 4 }}
 spec:
   type: LoadBalancer
   {{- with $loadBalancer.sourceRanges }}
@@ -54,6 +56,7 @@ metadata:
   name: concord-server
   labels:
     app: concord-server
+    {{- include "concord.commonLabels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:

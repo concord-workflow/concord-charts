@@ -6,6 +6,7 @@ metadata:
   name: postgresql
   labels:
     app: postgresql
+    {{- include "concord.commonLabels" . | nindent 4 }}
 spec:
   type: NodePort
   ports:

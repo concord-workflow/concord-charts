@@ -3,6 +3,7 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: concord-agent-operator
+{{ include "concord.commonMetadataLabels" . | indent 2 }}
 subjects:
   - kind: ServiceAccount
     name: concord-agent-operator

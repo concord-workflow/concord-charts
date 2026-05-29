@@ -6,6 +6,7 @@ metadata:
   name: postgresql-pvc
   labels:
     app: postgresql
+    {{- include "concord.commonLabels" . | nindent 4 }}
 spec:
 {{- if .Values.database.storageClass }}
 {{- if (eq "-" .Values.database.storageClass) }}

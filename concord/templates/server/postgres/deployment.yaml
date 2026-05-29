@@ -4,6 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgresql
+{{ include "concord.commonMetadataLabels" . | indent 2 }}
   {{- if .Values.database.internal.deploymentAnnotations }}
   annotations:
     {{- toYaml .Values.database.internal.deploymentAnnotations | nindent 4 }}
@@ -17,6 +18,7 @@ spec:
     metadata:
       labels:
         app: postgresql
+        {{- include "concord.commonLabels" . | nindent 8 }}
       {{- if .Values.database.internal.podAnnotations }}
       annotations:
         {{- toYaml .Values.database.internal.podAnnotations | nindent 8 }}

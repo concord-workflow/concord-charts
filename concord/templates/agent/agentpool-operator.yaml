@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: concord-agent-operator
+{{ include "concord.commonMetadataLabels" . | indent 2 }}
   {{- if .Values.deploymentAnnotations }}
   annotations:
     {{- toYaml .Values.deploymentAnnotations | nindent 4 }}
@@ -16,6 +17,7 @@ spec:
     metadata:
       labels:
         name: concord-agent-operator
+        {{- include "concord.commonLabels" . | nindent 8 }}
       {{- if .Values.podAnnotations }}
       annotations:
         {{- toYaml .Values.podAnnotations | nindent 8 }}

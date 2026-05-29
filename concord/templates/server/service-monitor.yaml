@@ -6,6 +6,7 @@ metadata:
   name: concord-server
   labels:
     app: concord-server
+    {{- include "concord.commonLabels" . | nindent 4 }}
 {{- with .Values.server.serviceMonitor.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}

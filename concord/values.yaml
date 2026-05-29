@@ -12,6 +12,16 @@ agentOperatorImageName: concord-agent-operator
 # agentOperatorImageOverride: myharbor.io/myproject/my-k8s-agent-operator:myTag
 imagePullPolicy: IfNotPresent
 
+# Labels added to all resources rendered by this chart. These labels are also
+# added to Deployment pod templates.
+commonLabels: {}
+
+# Disabled by default because existing namespaces created outside Helm must be
+# adopted before Helm can manage them.
+namespace:
+  create: false
+  labels: {}
+
 # --------------------------------------------------------------------------------------------------------------------
 # Registry
 # --------------------------------------------------------------------------------------------------------------------
