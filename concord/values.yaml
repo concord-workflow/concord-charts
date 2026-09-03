@@ -97,6 +97,9 @@ database:
 server:
   type: internal
   replicaCount: 1
+  # name of an externally managed Secret holding the server's credentials;
+  # when empty the chart renders its own concord-server-credentials Secret
+  existingSecret: ""
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
   agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
   maxLogAge: "7 days"

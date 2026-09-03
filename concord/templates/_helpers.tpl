@@ -70,3 +70,11 @@ Select image pull secret
         {{- printf "\n  - name: %s" (include "registry-secret.name" . ) }}
 {{- end }}
 {{- end }}
+
+{{/*
+Name of the Secret holding the server's credentials: the externally managed
+Secret from server.existingSecret when set, otherwise the chart-managed default.
+*/}}
+{{- define "concord.serverCredentialsSecretName" -}}
+{{- .Values.server.existingSecret | default "concord-server-credentials" -}}
+{{- end -}}

@@ -34,6 +34,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: postgresql-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
+                  key: DB_PASSWORD
           volumeMounts:
             - mountPath: /concord/postgresql
               name: postgresql-volume
