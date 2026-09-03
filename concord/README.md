@@ -82,5 +82,13 @@ At this point, you now have a cluster where you can deploy (or redeploy) Concord
 
 Using the Concord chart, all you have to do is specify the value of the `serviceAccount.name` field in your values to be the same as the name of the service account name you specify in the `eksctl` configuration and everything will be wired up for you automatically.
 
+## WebSockets
+
+Concord 2.45.0 requires the `agentWebsocket` permission for agent WebSocket
+connections (see the Concord 2.45.0 changelog). The chart renders
+`websockets.requirePermission` from `server.websocketsRequirePermission`,
+defaulting to `false` to preserve the pre-2.45 behavior. Set it to `true` once
+your agent users were granted the `agentWebsocket` permission.
+
 [1]: https://concord.walmartlabs.com/
 [2]: https://aws.amazon.com/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/
