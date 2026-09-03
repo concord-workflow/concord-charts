@@ -2,7 +2,7 @@
 # Concord
 # --------------------------------------------------------------------------------------------------------------------
 
-version: 2.15.0
+version: 2.45.0
 registry: walmartlabs
 serverImageName: concord-server
 # serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
@@ -104,6 +104,9 @@ server:
   maxStalledAge: "1 minute"
   sessionTimeout: "3 hours"
   tmpDirSizeLimit: "16Gi"
+  # Concord 2.45+ requires the 'agentWebsocket' permission for agent WebSocket
+  # connections; false preserves the pre-2.45 behavior
+  websocketsRequirePermission: false
   serviceMonitor:
     enabled: false # enable to create a monitoring.coreos.com/v1 ServiceMonitor for the server with the given labels
     labels: {}
