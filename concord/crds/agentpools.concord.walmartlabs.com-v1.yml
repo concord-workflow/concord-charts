@@ -22,8 +22,6 @@ spec:
             properties:
               autoScale:
                 type: boolean
-              autoScaleStrategy:
-                type: string
               maxSize:
                 type: integer
               minSize:
@@ -45,8 +43,10 @@ spec:
               decrementThresholdFactor:
                 type: number
               queueSelector:
+                additionalProperties:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
                 type: object
-                x-kubernetes-preserve-unknown-fields: true
               configMap:
                 properties:
                   apiVersion:
