@@ -89,49 +89,49 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: DB_PASSWORD
             - name: SERVER_PASSWORD_BASE64
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: SERVER_PASSWORD_BASE64
             - name: SECRET_STORE_SALT_BASE64
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: SECRET_STORE_SALT_BASE64
             - name: PROJECT_SECRET_SALT_BASE64
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: PROJECT_SECRET_SALT_BASE64
             - name: ADMIN_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: ADMIN_TOKEN
             - name: AGENT_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: AGENT_TOKEN
             - name: LDAP_SYSTEM_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: LDAP_SYSTEM_PASSWORD
                   optional: true
             - name: GITHUB_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: GITHUB_SECRET
                   optional: true
             - name: GIT_OAUTH
               valueFrom:
                 secretKeyRef:
-                  name: concord-server-credentials
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
                   key: GIT_OAUTH
                   optional: true
             - name: CONCORD_CFG_FILE
