@@ -131,6 +131,11 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
   namespaced `concord-k8s-dispatcher` Role/RoleBinding allowing the server
   ServiceAccount to manage Secrets and Jobs for the Kubernetes process
   dispatcher.
+- `expose.type: clusterIP`: render a plain ClusterIP `concord-server` Service.
+- `expose.debug.enabled` (default `true`): include the server debug port 5005
+  in the `concord-server` Service.
+- `database.internal.serviceType` (default `NodePort`): Service type for the
+  internal PostgreSQL Service.
 
 ## WebSockets
 
