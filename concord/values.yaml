@@ -74,6 +74,8 @@ database:
     password: "q1q1q1q1"
     database: "postgres"
     image:
+      # digest-pinned image reference; takes precedence over repository/tag
+      ref: ""
       repository: library/postgres
       tag: 10.6
     resources: {}
