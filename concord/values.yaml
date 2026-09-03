@@ -38,6 +38,9 @@ registryCredentials:
 expose:
   port: 8001
   type: ingress
+  debug:
+    # include the server debug port 5005 in the concord-server Service
+    enabled: true
   tls:
     enabled: true
     secretName: concord-tls
@@ -73,6 +76,8 @@ database:
     user: "postgres"
     password: "q1q1q1q1"
     database: "postgres"
+    # Service type for the internal PostgreSQL Service
+    serviceType: NodePort
     image:
       # digest-pinned image reference; takes precedence over repository/tag
       ref: ""
