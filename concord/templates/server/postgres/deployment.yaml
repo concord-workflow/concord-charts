@@ -27,7 +27,7 @@ spec:
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: postgresql
-          image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
+          image: {{ include "concord.postgresqlImage" . }}
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: {{ .Values.database.internal.port }}
