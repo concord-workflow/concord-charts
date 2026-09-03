@@ -8,7 +8,7 @@ metadata:
     app: postgresql
     {{- include "concord.commonLabels" . | nindent 4 }}
 spec:
-  type: NodePort
+  type: {{ .Values.database.internal.serviceType }}
   ports:
   - port: {{ .Values.database.internal.port }}
     protocol: TCP
