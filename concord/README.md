@@ -117,6 +117,12 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
 `library/postgres@sha256:...`) to pin the database image immutably;
 `database.internal.image.repository`/`tag` remain supported.
 
+## Hardening values
+
+- `agentOperator.tokenSecretName` and `agentOperator.tokenSecretKey` (default
+  `CONCORD_API_TOKEN`): read the operator's API token from a Secret instead of
+  the literal `server.agentToken` value.
+
 ## WebSockets
 
 Concord 2.45.0 requires the `agentWebsocket` permission for agent WebSocket
