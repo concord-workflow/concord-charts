@@ -1,0 +1,32 @@
+# Values exercising the chart's externally managed security contract:
+# - credentials come from an external Secret, none are rendered by the chart;
+# - the agent operator reads its token from the same Secret;
+# - PostgreSQL runs a digest-pinned image with no password in its ConfigMap;
+# - both Services are ClusterIP without the debug port;
+# - the operator gets namespaced RBAC plus a cluster-wide AgentPool watch;
+# - the server gets the Kubernetes dispatcher RBAC.
+server:
+  type: internal
+  existingSecret: concord-server-credentials-external
+  websocketsRequirePermission: false
+  kubernetesDispatcherRbac:
+    enabled: true
+
+agentOperator:
+  enabled: true
+  tokenSecretName: concord-server-credentials-external
+  tokenSecretKey: AGENT_TOKEN
+  rbac:
+    clusterWide: false
+
+expose:
+  type: clusterIP
+  debug:
+    enabled: false
+
+database:
+  type: internal
+  internal:
+    serviceType: ClusterIP
+    image:
+      ref: library/postgres@sha256:7958605b474b3d264a969cb3a123d6aa00ad1e1fe9da8a69984dabb704d93317

@@ -136,6 +136,7 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
   in the `concord-server` Service.
 - `database.internal.serviceType` (default `NodePort`): Service type for the
   internal PostgreSQL Service.
+- `database.storageClass`: storage class for the `postgresql-pvc` PVC.
 
 ## WebSockets
 
@@ -144,6 +145,18 @@ connections (see the Concord 2.45.0 changelog). The chart renders
 `websockets.requirePermission` from `server.websocketsRequirePermission`,
 defaulting to `false` to preserve the pre-2.45 behavior. Set it to `true` once
 your agent users were granted the `agentWebsocket` permission.
+
+## OCI packages and Git sources
+
+Tagged pushes build an OCI chart package in
+`ghcr.io/concord-workflow/concord-charts`. Pulling that package requires an
+authenticated `helm registry login`. To consume a release anonymously, use the
+public Git tag instead:
+
+```sh
+git clone --branch 2.45.0 --depth 1 https://github.com/concord-workflow/concord-charts.git
+helm upgrade --install concord concord-charts/concord -f my-values.yaml
+```
 
 [1]: https://concord.walmartlabs.com/
 [2]: https://aws.amazon.com/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/
