@@ -127,6 +127,10 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
   Role (pods, events, ConfigMaps, pods/exec and AgentPools) plus a cluster-wide
   `concord-agent-operator-agentpool-watch` ClusterRole limited to get, list and
   watch on AgentPools.
+- `server.kubernetesDispatcherRbac.enabled` (default `false`): render a
+  namespaced `concord-k8s-dispatcher` Role/RoleBinding allowing the server
+  ServiceAccount to manage Secrets and Jobs for the Kubernetes process
+  dispatcher.
 
 ## WebSockets
 

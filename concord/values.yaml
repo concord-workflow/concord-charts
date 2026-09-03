@@ -112,6 +112,10 @@ server:
   # Concord 2.45+ requires the 'agentWebsocket' permission for agent WebSocket
   # connections; false preserves the pre-2.45 behavior
   websocketsRequirePermission: false
+  kubernetesDispatcherRbac:
+    # render a namespaced Role/RoleBinding for the server's Kubernetes
+    # process dispatcher (Secrets and Jobs in the release namespace)
+    enabled: false
   serviceMonitor:
     enabled: false # enable to create a monitoring.coreos.com/v1 ServiceMonitor for the server with the given labels
     labels: {}
