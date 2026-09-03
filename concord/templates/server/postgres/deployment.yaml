@@ -27,13 +27,19 @@ spec:
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: postgresql
-          image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
+          image: {{ include "concord.postgresqlImage" . }}
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: {{ .Values.database.internal.port }}
           envFrom:
             - configMapRef:
                 name: postgresql-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "concord.serverCredentialsSecretName" . }}
+                  key: DB_PASSWORD
           volumeMounts:
             - mountPath: /concord/postgresql
               name: postgresql-volume

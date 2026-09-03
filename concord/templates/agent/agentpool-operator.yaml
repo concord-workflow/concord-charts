@@ -63,7 +63,14 @@ spec:
               value: "{{ .Values.server.apiBaseUrl }}"
               {{ end }}
             - name: CONCORD_API_TOKEN
+              {{- if .Values.agentOperator.tokenSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.agentOperator.tokenSecretName }}
+                  key: {{ .Values.agentOperator.tokenSecretKey }}
+              {{- else }}
               value: {{ .Values.server.agentToken }}
+              {{- end }}
               {{ if .Values.agentOperator.monitoring.enabled }}
             - name: ORG_NAME
               value: {{ .Values.agentOperator.monitoring.org }}

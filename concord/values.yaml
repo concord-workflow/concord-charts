@@ -2,7 +2,7 @@
 # Concord
 # --------------------------------------------------------------------------------------------------------------------
 
-version: 2.15.0
+version: 2.45.0
 registry: walmartlabs
 serverImageName: concord-server
 # serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
@@ -38,6 +38,9 @@ registryCredentials:
 expose:
   port: 8001
   type: ingress
+  debug:
+    # include the server debug port 5005 in the concord-server Service
+    enabled: true
   tls:
     enabled: true
     secretName: concord-tls
@@ -73,7 +76,11 @@ database:
     user: "postgres"
     password: "q1q1q1q1"
     database: "postgres"
+    # Service type for the internal PostgreSQL Service
+    serviceType: NodePort
     image:
+      # digest-pinned image reference; takes precedence over repository/tag
+      ref: ""
       repository: library/postgres
       tag: 10.6
     resources: {}
@@ -97,6 +104,9 @@ database:
 server:
   type: internal
   replicaCount: 1
+  # name of an externally managed Secret holding the server's credentials;
+  # when empty the chart renders its own concord-server-credentials Secret
+  existingSecret: ""
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
   agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
   maxLogAge: "7 days"
@@ -104,6 +114,13 @@ server:
   maxStalledAge: "1 minute"
   sessionTimeout: "3 hours"
   tmpDirSizeLimit: "16Gi"
+  # Concord 2.45+ requires the 'agentWebsocket' permission for agent WebSocket
+  # connections; false preserves the pre-2.45 behavior
+  websocketsRequirePermission: false
+  kubernetesDispatcherRbac:
+    # render a namespaced Role/RoleBinding for the server's Kubernetes
+    # process dispatcher (Secrets and Jobs in the release namespace)
+    enabled: false
   serviceMonitor:
     enabled: false # enable to create a monitoring.coreos.com/v1 ServiceMonitor for the server with the given labels
     labels: {}
@@ -122,6 +139,14 @@ agent:
 
 agentOperator:
   enabled: true
+  # name of a Secret with the operator's API token; when empty the operator
+  # uses the literal server.agentToken value
+  tokenSecretName: ""
+  tokenSecretKey: CONCORD_API_TOKEN
+  rbac:
+    # true: broad cluster-wide ClusterRole (historical default);
+    # false: namespaced Role plus a cluster-wide AgentPool watch role
+    clusterWide: true
   monitoring:
     enabled: false
     org: "Default"

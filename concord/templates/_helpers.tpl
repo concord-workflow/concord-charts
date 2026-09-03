@@ -70,3 +70,23 @@ Select image pull secret
         {{- printf "\n  - name: %s" (include "registry-secret.name" . ) }}
 {{- end }}
 {{- end }}
+
+{{/*
+Name of the Secret holding the server's credentials: the externally managed
+Secret from server.existingSecret when set, otherwise the chart-managed default.
+*/}}
+{{- define "concord.serverCredentialsSecretName" -}}
+{{- .Values.server.existingSecret | default "concord-server-credentials" -}}
+{{- end -}}
+
+{{/*
+PostgreSQL image: the digest-pinned database.internal.image.ref when set,
+otherwise the legacy repository:tag pair.
+*/}}
+{{- define "concord.postgresqlImage" -}}
+{{- if .Values.database.internal.image.ref -}}
+{{- .Values.database.internal.image.ref -}}
+{{- else -}}
+{{- .Values.database.internal.image.repository -}}:{{ .Values.database.internal.image.tag -}}
+{{- end -}}
+{{- end -}}
