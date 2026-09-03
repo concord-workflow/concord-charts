@@ -122,6 +122,11 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
 - `agentOperator.tokenSecretName` and `agentOperator.tokenSecretKey` (default
   `CONCORD_API_TOKEN`): read the operator's API token from a Secret instead of
   the literal `server.agentToken` value.
+- `agentOperator.rbac.clusterWide` (default `true`): keep the historical broad
+  ClusterRole. Set to `false` to render a namespaced `concord-agent-operator`
+  Role (pods, events, ConfigMaps, pods/exec and AgentPools) plus a cluster-wide
+  `concord-agent-operator-agentpool-watch` ClusterRole limited to get, list and
+  watch on AgentPools.
 
 ## WebSockets
 

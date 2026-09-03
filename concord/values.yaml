@@ -134,6 +134,10 @@ agentOperator:
   # uses the literal server.agentToken value
   tokenSecretName: ""
   tokenSecretKey: CONCORD_API_TOKEN
+  rbac:
+    # true: broad cluster-wide ClusterRole (historical default);
+    # false: namespaced Role plus a cluster-wide AgentPool watch role
+    clusterWide: true
   monitoring:
     enabled: false
     org: "Default"
