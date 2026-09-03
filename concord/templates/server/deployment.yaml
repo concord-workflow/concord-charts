@@ -30,7 +30,7 @@ spec:
       initContainers:
       {{- if eq .Values.database.type "internal" }}
         - name: postgres-ready
-          image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
+          image: {{ include "concord.postgresqlImage" . }}
           command: [ 'sh', '-c', 'until pg_isready -h postgresql -p 5432; do echo waiting for database; sleep 1; done; sleep 5;' ]
       {{- end }}
       {{- range $index, $sidecar := .Values.sidecars }}
