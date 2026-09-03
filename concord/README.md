@@ -82,6 +82,41 @@ At this point, you now have a cluster where you can deploy (or redeploy) Concord
 
 Using the Concord chart, all you have to do is specify the value of the `serviceAccount.name` field in your values to be the same as the name of the service account name you specify in the `eksctl` configuration and everything will be wired up for you automatically.
 
+## External credentials
+
+By default, the chart renders a `concord-server-credentials` Secret from the
+`database.internal.password` (or `database.external.password`),
+`server.adminToken` and `server.agentToken` values.
+
+For a hardened installation, create the Secret outside of Helm and set
+`server.existingSecret` to its name. The chart then renders no Secret at all:
+the server Deployment, the agent operator Deployment (when
+`agentOperator.tokenSecretName` points at the same Secret) and the internal
+PostgreSQL Deployment all read their credentials from it. A missing key or
+Secret leaves the pods unready instead of silently falling back to rendered
+credentials.
+
+Required keys:
+
+- `DB_PASSWORD`
+- `SERVER_PASSWORD_BASE64`
+- `SECRET_STORE_SALT_BASE64`
+- `PROJECT_SECRET_SALT_BASE64`
+- `ADMIN_TOKEN`
+- `AGENT_TOKEN`
+
+Conditional keys, referenced only when the corresponding feature is enabled:
+
+- `LDAP_SYSTEM_PASSWORD` when `ldap.enabled` is true;
+- `GITHUB_SECRET` when `github.enabled` is true;
+- `GIT_OAUTH` when `git.oauth` is set.
+
+The internal PostgreSQL Deployment reads `DB_PASSWORD` from the same Secret, so
+`POSTGRES_PASSWORD` is never rendered into the `postgresql-config` ConfigMap.
+Set `database.internal.image.ref` to a digest-pinned image (for example
+`library/postgres@sha256:...`) to pin the database image immutably;
+`database.internal.image.repository`/`tag` remain supported.
+
 ## WebSockets
 
 Concord 2.45.0 requires the `agentWebsocket` permission for agent WebSocket
