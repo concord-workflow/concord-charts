@@ -1,7 +1,7 @@
 # Values exercising the chart's externally managed security contract:
 # - credentials come from an external Secret, none are rendered by the chart;
 # - the agent operator reads its token from the same Secret;
-# - PostgreSQL runs a digest-pinned image with no password in its ConfigMap;
+# - PostgreSQL explicitly selects an 18.6 digest, with no password in its ConfigMap;
 # - both Services are ClusterIP without the debug port;
 # - the operator gets namespaced RBAC plus a cluster-wide AgentPool watch;
 # - the server gets the Kubernetes dispatcher RBAC.

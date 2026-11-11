@@ -8,7 +8,10 @@ fail() { echo "render-upgrade: FAIL: $1" >&2; exit 1; }
 helm template concord "${CHART_DIR}" > "${WORK_DIR}/default.yaml"
 grep -q 'image: walmartlabs/concord-server:2.47.0$' "${WORK_DIR}/default.yaml" || fail 'server image'
 grep -q 'image: walmartlabs/concord-agent-operator:2.47.0$' "${WORK_DIR}/default.yaml" || fail 'operator image'
-[[ $(grep -c 'image: library/postgres:18.6$' "${WORK_DIR}/default.yaml") == 2 ]] || fail 'database and init images'
+[[ $(grep -c 'image: library/postgres:10.6$' "${WORK_DIR}/default.yaml") == 2 ]] || fail 'database and init images'
+# A database major upgrade must be an explicit values change.
+helm template concord "${CHART_DIR}" --set-string database.internal.image.tag=18.6 > "${WORK_DIR}/postgres18.yaml"
+[[ $(grep -c 'image: library/postgres:18.6$' "${WORK_DIR}/postgres18.yaml") == 2 ]] || fail 'explicit database upgrade'
 # Regression: credential and server-config helpers must not replace each other.
 helm template concord "${CHART_DIR}" --show-only templates/server/config-map.yaml > "${WORK_DIR}/config.yaml"
 grep -Fq 'jdbc:postgresql://postgresql:5432/postgres' "${WORK_DIR}/config.yaml" || fail 'database configuration missing'
