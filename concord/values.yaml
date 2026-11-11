@@ -2,7 +2,7 @@
 # Concord
 # --------------------------------------------------------------------------------------------------------------------
 
-version: 2.45.0
+version: "2.47.0"
 registry: walmartlabs
 serverImageName: concord-server
 # serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
@@ -82,7 +82,8 @@ database:
       # digest-pinned image reference; takes precedence over repository/tag
       ref: ""
       repository: library/postgres
-      tag: 10.6
+      # New installations only: migrate existing data before changing PostgreSQL majors.
+      tag: "18.6"
     resources: {}
     deploymentAnnotations: {}
     podAnnotations: {}

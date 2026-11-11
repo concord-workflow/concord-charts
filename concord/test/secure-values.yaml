@@ -29,4 +29,4 @@ database:
   internal:
     serviceType: ClusterIP
     image:
-      ref: library/postgres@sha256:7958605b474b3d264a969cb3a123d6aa00ad1e1fe9da8a69984dabb704d93317
+      ref: library/postgres@sha256:e3d24f6906d0760bf4da0dae872415391ededefad23fd471c47dc53b0ddf3c42

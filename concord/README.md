@@ -21,9 +21,13 @@ helm install concord concord/concord
 
 ## Agent Pools
 
-For reasonable, out of the box utility, an autoscaling agent pool is enabled by default with a minimum size of one, and a maximum size of 10. The number of agents autoscale based on the number of processes waiting in the queue.
+The chart installs the agent operator and its CRD. It does not create an AgentPool.
+Supply an AgentPool or another agent deployment before submitting processes.
 
-The default autoscaling agent pool will likely cover most use cases, but you are free to create as many agent pools as you wish, each with different configurations and capabilities.
+`agentImageName`, `agentImageOverride`, `agent`, and `dind` values currently have no
+consumer in the chart templates. `files/agent/agent.conf` is an external AgentPool
+example and requires `SERVER_API_KEY` from the agent pod environment.
+See [the upgrade instructions](UPGRADING.md) and `test/agentpool-2.47.0.yaml`.
 
 ## Running EKS with IRSA
 
@@ -154,7 +158,7 @@ authenticated `helm registry login`. To consume a release anonymously, use the
 public Git tag instead:
 
 ```sh
-git clone --branch 2.45.0 --depth 1 https://github.com/concord-workflow/concord-charts.git
+git clone --branch 2.47.0 --depth 1 https://github.com/concord-workflow/concord-charts.git
 helm upgrade --install concord concord-charts/concord -f my-values.yaml
 ```
 
