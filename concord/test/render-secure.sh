@@ -90,7 +90,7 @@ grep -q 'key: AGENT_TOKEN' "${secure}" ||
 [ "$(count_docs "${secure}" "^kind: ClusterRole\$" "agentpool-watch" "'\*'")" -eq 0 ] ||
   fail "secure: agentpool-watch ClusterRole must not use wildcard verbs"
 
-grep -q 'image: library/postgres@sha256:7958605b474b3d264a969cb3a123d6aa00ad1e1fe9da8a69984dabb704d93317' "${secure}" ||
+grep -q 'image: library/postgres@sha256:e3d24f6906d0760bf4da0dae872415391ededefad23fd471c47dc53b0ddf3c42' "${secure}" ||
   fail "secure: PostgreSQL image must be the digest pin from database.internal.image.ref"
 
 grep -q 'websockets.requirePermission = false' "${secure}" ||
@@ -116,7 +116,7 @@ grep -q 'type: NodePort' "${default}" ||
 grep -q 'port: 5005' "${default}" ||
   fail "default: debug port must render by default"
 
-grep -q 'image: library/postgres:10.6' "${default}" ||
+grep -q 'image: library/postgres:18.6' "${default}" ||
   fail "default: PostgreSQL image must default to repository:tag"
 
 grep -q 'websockets.requirePermission = false' "${default}" ||
