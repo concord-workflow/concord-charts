@@ -18,8 +18,11 @@ Changing encryption values can prevent decryption of existing secrets.
 
 ## PostgreSQL
 
-The internal database default changes from PostgreSQL 10.6 to `library/postgres:18.6`.
-This change is for new installations. It does not convert existing database files.
+The internal database default remains `library/postgres:10.6` to preserve existing installations.
+This preserves the chart value; it does not establish PostgreSQL 10 compatibility with Concord 2.47.0.
+PostgreSQL 18.6 is an explicit opt-in through `database.internal.image.tag` or `image.ref`.
+The secure test values explicitly select a PostgreSQL 18.6 digest.
+Changing the image does not convert existing database files.
 Do not start PostgreSQL 18 with an unconverted PostgreSQL 10 data directory.
 Use a tested dump/restore or `pg_upgrade` procedure before changing the image.
 Use a new volume for dump/restore. Keep the old volume for recovery.
