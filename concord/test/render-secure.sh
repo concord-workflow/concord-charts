@@ -116,7 +116,7 @@ grep -q 'type: NodePort' "${default}" ||
 grep -q 'port: 5005' "${default}" ||
   fail "default: debug port must render by default"
 
-grep -q 'image: library/postgres:18.6' "${default}" ||
+grep -q 'image: library/postgres:10.6' "${default}" ||
   fail "default: PostgreSQL image must default to repository:tag"
 
 grep -q 'websockets.requirePermission = false' "${default}" ||
