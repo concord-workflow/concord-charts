@@ -45,6 +45,8 @@ expose:
     enabled: true
     secretName: concord-tls
   ingress:
+    # Optional Kubernetes IngressClass (for example, tailscale).
+    className: ""
     host: concord.yourdomain.com
     annotations:
       ingress.kubernetes.io/ssl-redirect: "true"
