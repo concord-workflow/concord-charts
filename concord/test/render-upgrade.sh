@@ -41,4 +41,8 @@ grep -Fq 'secret = ${GITHUB_SECRET}' "${WORK_DIR}/github.yaml" || fail 'webhook 
 helm template concord "${CHART_DIR}" --set github.enabled=true \
   --set server.existingSecret=external-credentials > "${WORK_DIR}/github-external.yaml"
 grep -Fq 'secret = ${GITHUB_SECRET}' "${WORK_DIR}/github-external.yaml" || fail 'external webhook secret'
+helm template concord "${CHART_DIR}" --show-only templates/server/ingress.yaml \
+  --set expose.ingress.className=tailscale --set-string expose.tls.secretName= > "${WORK_DIR}/tailscale.yaml"
+grep -q 'ingressClassName: "tailscale"' "${WORK_DIR}/tailscale.yaml" || fail 'ingress class selection'
+! grep -q 'secretName:' "${WORK_DIR}/tailscale.yaml" || fail 'unwanted TLS Secret for managed certificates'
 echo 'render-upgrade: OK'

@@ -85,6 +85,16 @@ Version 2.45.0 restricts template URI schemes and deletes earlier checkpoints wh
 the runtime user changes. Version 2.46.0 adds decryption and trigger access checks.
 Archive limits can reject large payloads. Test representative flows before the upgrade.
 
+## Private ingress
+
+Set `expose.ingress.className` to select an installed Ingress controller explicitly.
+For Tailscale HTTPS ingress, set `expose.type=ingress` and the class to `tailscale`.
+Set `expose.ingress.host` to the service's full tailnet DNS name.
+Keep `expose.tls.enabled=true`. Set `expose.tls.secretName` to an empty string
+when the controller provides its own certificate.
+Do not enable Tailscale Funnel for a private deployment.
+The chart does not install the Tailscale operator or configure tailnet access rules.
+
 ## External AgentPools
 
 Update each AgentPool image explicitly. Operator upgrades do not rewrite its image fields.
