@@ -54,7 +54,8 @@ spec:
         image: DIND_IMAGE
         args:
         - -H
-        - tcp://0.0.0.0:6666
+        - tcp://127.0.0.1:6666
+        - --tls=false
         resources:
           requests:
             cpu: 1
@@ -78,6 +79,8 @@ spec:
               command:
               - sh
               - /hooks/preStopHook.sh
+        command:
+        - dockerd
       - name: agent
         image: walmartlabs/concord-agent:2.47.0
         imagePullPolicy: IfNotPresent
