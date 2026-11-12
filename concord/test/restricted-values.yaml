@@ -1,0 +1,44 @@
+# Linux restricted-profile example for the stock 2.47.0 images.
+# PostgreSQL uses UID/GID 999 in both the default 10.6 and opt-in 18.6 images.
+# Check volume ownership before applying to an existing database.
+server:
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 456
+    runAsGroup: 456
+    fsGroup: 456
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
+  postgresReady:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: [ALL]
+agentOperator:
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
+database:
+  internal:
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      runAsGroup: 999
+      fsGroup: 999
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: [ALL]

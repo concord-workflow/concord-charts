@@ -147,6 +147,55 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
   internal PostgreSQL Service.
 - `database.storageClass`: storage class for the `postgresql-pvc` PVC.
 
+## Pod security
+
+`server`, `agentOperator`, and `database.internal` each accept Kubernetes
+`podSecurityContext` and container `securityContext` maps. Both default to `{}`
+and are omitted when empty. `server.postgresReady.securityContext` configures
+the database init container separately. Enabled plugin init containers can set
+`sidecars[].securityContext`.
+
+Use [test/restricted-values.yaml](test/restricted-values.yaml) as the recommended
+Linux restricted profile for the stock images:
+
+```sh
+helm template concord concord/ -f concord/test/restricted-values.yaml
+```
+
+The example uses non-root UID/GID 456 for the server, 65532 for the operator,
+and 999 for PostgreSQL, `RuntimeDefault` seccomp, no privilege escalation, and
+all capabilities dropped. The database init container inherits the server UID
+and has its own capability/privilege settings. Check UID/GID and writable paths
+for any image override. Plugin init containers need equivalent settings too.
+
+Ensure the server temporary volume is writable by GID 456 and the PostgreSQL
+data volume by UID/GID 999. `fsGroup` helps where the storage driver supports it;
+it cannot repair an existing database owned by another UID. Back up and plan
+volume ownership changes before enabling non-root PostgreSQL. A read-only root
+filesystem is not required by the restricted standard and is not enabled in the
+example. Enabling it needs writable mounts for server GC logs, Java temporary
+files and PostgreSQL sockets in addition to the existing data/tmp volumes.
+
+The operator calls the Kubernetes API and defaults to
+`agentOperator.automountServiceAccountToken=true`. PostgreSQL defaults to
+`database.internal.automountServiceAccountToken=false`. The server's
+`automountServiceAccountToken` defaults to `null`: the chart renders `true` when
+`security.clusterAdmin` is enabled,
+and `false` otherwise. Set `server.automountServiceAccountToken=true` explicitly
+for API-using plugins or RBAC configured outside this chart; explicit `false`
+also overrides the automatic choice. Secret and ConfigMap volume/env injection
+does not require a pod API token. External AgentPools own their pod settings;
+the test AgentPool disables token mounting. Enable it if process tasks call the API.
+Cloud workload-identity projected tokens may be managed separately by admission webhooks.
+
+`server.postgresReady.resources` defaults to requests of 10m CPU/16Mi memory and
+limits of 100m CPU/64Mi memory. Override this map for your environment or use `null`
+to omit it (Helm merges an empty map with the defaults).
+
+Do not enforce baseline/restricted PSA on a namespace containing privileged DinD
+agents without planning exceptions or separate namespaces. This profile covers
+the chart Deployments; it does not harden externally managed agent pods.
+
 ## NetworkPolicy
 
 Set `networkPolicy.enabled=true` to isolate ingress to the internal server and

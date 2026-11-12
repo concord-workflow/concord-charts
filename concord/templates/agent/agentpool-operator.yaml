@@ -23,10 +23,19 @@ spec:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      automountServiceAccountToken: {{ .Values.agentOperator.automountServiceAccountToken }}
+      {{- with .Values.agentOperator.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "concord.agentOperatorRbacName" . }}
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-agent-operator
+          {{- with .Values.agentOperator.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- if .Values.agentOperatorImageOverride }}
           image: {{ .Values.agentOperatorImageOverride }}
           {{- else }}
