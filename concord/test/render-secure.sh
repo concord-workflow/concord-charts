@@ -120,5 +120,6 @@ grep -q 'websockets.requirePermission = false' "${default}" ||
   fail "default: server.conf must contain websockets.requirePermission = false"
 
 "${CHART_DIR}/test/render-rbac.sh"
+"${CHART_DIR}/test/render-network-policy.sh"
 
 echo "render-secure: OK (default and secure contracts hold)"

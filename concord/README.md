@@ -147,6 +147,51 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
   internal PostgreSQL Service.
 - `database.storageClass`: storage class for the `postgresql-pvc` PVC.
 
+## NetworkPolicy
+
+Set `networkPolicy.enabled=true` to isolate ingress to the internal server and
+PostgreSQL pods. It defaults to `false`; no policy is rendered when disabled.
+Your cluster network must enforce Kubernetes NetworkPolicy.
+
+PostgreSQL accepts TCP on `database.internal.port` only from pods labelled
+`app: concord-server` in the release namespace. The server accepts TCP 8001 from
+its replicas, the enabled chart operator, and `networkPolicy.server.agentPeers`.
+The default agent peer matches the upstream AgentPool template's
+`app: agentpools.concord.walmartlabs.com` label in the release namespace.
+Check your external AgentPool labels and namespaces before enabling the policy.
+Replace `agentPeers` for custom agents, and include a `namespaceSelector` in each
+peer for agents in other namespaces. AgentPool pods are not managed by this chart.
+
+Add ingress controllers and monitoring clients to
+`networkPolicy.server.ingressPeers`, for example:
+
+```yaml
+networkPolicy:
+  enabled: true
+  server:
+    ingressPeers:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: ingress-system
+        podSelector:
+          matchLabels:
+            app.kubernetes.io/name: ingress-controller
+```
+
+Both selectors in one peer mean namespace AND pod labels. Separate peers mean OR.
+An empty peer (`{}`) allows every source; use explicit selectors.
+Only TCP 8001 is allowed to the server, including HTTP, WebSockets and metrics.
+The debug port is blocked even if its Service port is enabled.
+The policy does not authenticate endpoints or protect `/metrics` from allowed peers.
+Policies for external servers or databases are the external owner's responsibility.
+
+The chart does not restrict egress or select operator/agent pods for ingress
+isolation. DNS, repositories, identity providers, database connections and the
+Kubernetes API remain reachable unless another policy restricts them. Kubernetes
+policies are additive: another allow policy can widen access. Node traffic,
+host-networked proxies and Service address translation depend on the network
+implementation; validate actual ingress paths in an isolated environment.
+
 ## WebSockets
 
 Concord 2.45.0 requires the `agentWebsocket` permission for agent WebSocket

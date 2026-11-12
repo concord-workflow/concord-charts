@@ -64,6 +64,27 @@ expose:
     annotations: {}
     sourceRanges: []
 
+# Optional ingress isolation. Requires a NetworkPolicy-capable cluster network.
+# Egress is not restricted by this chart.
+networkPolicy:
+  enabled: false
+  server:
+    # Same-namespace agents from the upstream AgentPool pod template.
+    # Replace this list for custom labels; add namespaceSelector for remote pools.
+    agentPeers:
+      - podSelector:
+          matchLabels:
+            app: agentpools.concord.walmartlabs.com
+    # Additional callers of TCP 8001 (ingress controllers, monitoring, etc.).
+    # Keep both selectors in ONE peer to require namespace AND pod labels.
+    ingressPeers: []
+    # - namespaceSelector:
+    #     matchLabels:
+    #       kubernetes.io/metadata.name: ingress-system
+    #   podSelector:
+    #     matchLabels:
+    #       app.kubernetes.io/name: ingress-controller
+
 # --------------------------------------------------------------------------------------------------------------------
 # Database/Postgres
 # --------------------------------------------------------------------------------------------------------------------
