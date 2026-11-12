@@ -48,6 +48,7 @@ spec:
         poolName: '%%poolName%%'
         concordCfgHash: '%%concordCfgHash%%'
     spec:
+      automountServiceAccountToken: false
       terminationGracePeriodSeconds: 3600
       containers:
       - name: dind

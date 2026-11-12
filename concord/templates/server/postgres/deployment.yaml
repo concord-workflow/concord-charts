@@ -26,9 +26,18 @@ spec:
         {{- toYaml .Values.database.internal.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      automountServiceAccountToken: {{ .Values.database.internal.automountServiceAccountToken }}
+      {{- with .Values.database.internal.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: postgresql
+          {{- with .Values.database.internal.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: {{ include "concord.postgresqlImage" . }}
           imagePullPolicy: "IfNotPresent"
           ports:
