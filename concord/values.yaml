@@ -136,6 +136,10 @@ server:
   # null: true for security.clusterAdmin, otherwise false.
   # Set true for API-using plugins or RBAC managed outside this chart.
   automountServiceAccountToken: null
+  cors:
+    # null keeps Concord's default (*). Set a single browser origin to restrict it.
+    # Example: https://console.example.com (no path or trailing slash).
+    allowOrigin: null
   postgresReady:
     securityContext: {}
     resources:
