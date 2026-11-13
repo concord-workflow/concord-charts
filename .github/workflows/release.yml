@@ -28,6 +28,9 @@ jobs:
         run: |
           helm lint concord/
 
+      - name: Install Render Test Dependencies
+        run: python3 -m pip install PyYAML==6.0.3
+
       - name: Render Secure Contract
         run: |
           concord/test/render-secure.sh
