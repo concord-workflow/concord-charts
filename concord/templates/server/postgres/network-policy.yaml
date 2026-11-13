@@ -1,4 +1,4 @@
-{{- if and .Values.networkPolicy.enabled (eq .Values.database.type "internal") }}
+{{- if and .Values.networkPolicy.enabled (eq .Values.database.type "internal") (eq .Values.server.type "internal") }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

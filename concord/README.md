@@ -153,6 +153,11 @@ Set `networkPolicy.enabled=true` to isolate ingress to the internal server and
 PostgreSQL pods. It defaults to `false`; no policy is rendered when disabled.
 Your cluster network must enforce Kubernetes NetworkPolicy.
 
+The PostgreSQL policy is rendered only when both the server and database are
+internal. With `server.type=external`, this chart leaves database policy to the
+operator, so it cannot block the external database client by selecting absent
+server pods. Configure your own database ingress policy for that topology.
+
 PostgreSQL accepts TCP on `database.internal.port` only from pods labelled
 `app: concord-server` in the release namespace. The server accepts TCP 8001 from
 its replicas, the enabled chart operator, and `networkPolicy.server.agentPeers`.
@@ -184,6 +189,25 @@ Only TCP 8001 is allowed to the server, including HTTP, WebSockets and metrics.
 The debug port is blocked even if its Service port is enabled.
 The policy does not authenticate endpoints or protect `/metrics` from allowed peers.
 Policies for external servers or databases are the external owner's responsibility.
+
+For `expose.type=nodePort` or `loadBalancer`, callers can arrive with an external
+or node source address. Pod selectors may not match these connections. Add an
+`ipBlock` peer for the approved client CIDR, for example (documentation range):
+
+```yaml
+networkPolicy:
+  enabled: true
+  server:
+    ingressPeers:
+      - ipBlock:
+          cidr: 192.0.2.0/24
+```
+
+Whether the policy sees the original client or a translated source depends on
+the CNI, load balancer and Service routing. Validate the source actually seen by
+your network plugin and allow only the required CIDRs. Traffic from local node
+processes or host-networked proxies can bypass pod policy isolation; an `ipBlock`
+is not a substitute for perimeter access controls.
 
 The chart does not restrict egress or select operator/agent pods for ingress
 isolation. DNS, repositories, identity providers, database connections and the
