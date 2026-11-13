@@ -23,7 +23,7 @@ spec:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
-      serviceAccountName: concord-agent-operator
+      serviceAccountName: {{ include "concord.agentOperatorRbacName" . }}
       {{- include "imagePullSecretName" . | nindent 6 }}
       containers:
         - name: concord-agent-operator
@@ -68,6 +68,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.agentOperator.tokenSecretName }}
                   key: {{ .Values.agentOperator.tokenSecretKey }}
+              {{- else if .Values.server.existingSecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.server.existingSecret }}
+                  key: AGENT_TOKEN
               {{- else }}
               value: {{ .Values.server.agentToken }}
               {{- end }}

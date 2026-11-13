@@ -90,3 +90,12 @@ otherwise the legacy repository:tag pair.
 {{- .Values.database.internal.image.repository -}}:{{ .Values.database.internal.image.tag -}}
 {{- end -}}
 {{- end -}}
+
+{{/* Keep legacy cluster-wide RBAC names; scope namespaced RBAC to the release. */}}
+{{- define "concord.agentOperatorRbacName" -}}
+{{- if .Values.agentOperator.rbac.clusterWide -}}
+concord-agent-operator
+{{- else -}}
+{{- printf "%s-agent-operator" (include "concord.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}

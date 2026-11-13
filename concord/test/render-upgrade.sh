@@ -46,3 +46,39 @@ helm template concord "${CHART_DIR}" --show-only templates/server/ingress.yaml \
 grep -q 'ingressClassName: "tailscale"' "${WORK_DIR}/tailscale.yaml" || fail 'ingress class selection'
 ! grep -q 'secretName:' "${WORK_DIR}/tailscale.yaml" || fail 'unwanted TLS Secret for managed certificates'
 echo 'render-upgrade: OK'
+# Never roll two PostgreSQL instances against the same volume.
+python3 - "${WORK_DIR}/default.yaml" <<'PY'
+import sys, yaml
+p = next(d for d in yaml.safe_load_all(open(sys.argv[1]))
+         if d and d['kind'] == 'Deployment' and d['metadata']['name'] == 'postgresql')
+assert p['spec']['replicas'] == 1
+assert p['spec']['strategy'] == {'type': 'Recreate'}
+PY
+for exposure in ingress nodePort loadBalancer clusterIP; do
+  helm template concord "${CHART_DIR}" --set expose.type="${exposure}" > "${WORK_DIR}/exposure.yaml"
+  grep -q '^  name: concord-server$' "${WORK_DIR}/exposure.yaml" || fail "missing Service: ${exposure}"
+done
+for invalid in ClusterIP typo; do
+  if helm template concord "${CHART_DIR}" --set expose.type="${invalid}" > /dev/null 2>&1; then
+    fail "invalid expose.type accepted: ${invalid}"
+  fi
+done
+# No dispatcher RBAC is shipped for a feature absent from the server.
+! grep -q 'concord-k8s-dispatcher' "${WORK_DIR}/default.yaml" || fail 'unsupported dispatcher RBAC rendered'
+# A chart-only release must work without a new Concord image.
+cp -R "${CHART_DIR}" "${WORK_DIR}/chart"
+sed -i 's/^version: .*/version: 2.47.1/' "${WORK_DIR}/chart/Chart.yaml"
+"${WORK_DIR}/chart/test/check-version.sh" 2.47.1
+if "${WORK_DIR}/chart/test/check-version.sh" 2.47.0 > /dev/null 2>&1; then
+  fail 'mismatched chart release tag accepted'
+fi
+sed -i 's/^appVersion: .*/appVersion: "2.47.1"/' "${WORK_DIR}/chart/Chart.yaml"
+if "${WORK_DIR}/chart/test/check-version.sh" > /dev/null 2>&1; then
+  fail 'mismatched application/image version accepted'
+fi
+# The removed agent template must not be shipped in the chart package.
+helm package "${CHART_DIR}" -d "${WORK_DIR}" > /dev/null
+if tar -tzf "${WORK_DIR}"/concord-*.tgz | grep -q 'files/agent/agent.conf'; then
+  fail 'unused agent template packaged'
+fi
+echo 'render-upgrade: review regressions OK'
