@@ -82,13 +82,10 @@ grep -q 'key: AGENT_TOKEN' "${secure}" ||
 [ "$(count_docs "${secure}" "^kind: ClusterRole\$" "^  name: concord-agent-operator\$")" -eq 0 ] ||
   fail "secure: broad concord-agent-operator ClusterRole must not render"
 
-[ "$(count_docs "${secure}" "^kind: Role\$")" -ge 2 ] ||
-  fail "secure: namespaced concord-agent-operator and concord-k8s-dispatcher Roles must render"
-
-[ "$(count_docs "${secure}" "^kind: ClusterRole\$" "agentpool-watch")" -eq 1 ] ||
-  fail "secure: agentpool-watch ClusterRole must render"
-[ "$(count_docs "${secure}" "^kind: ClusterRole\$" "agentpool-watch" "'\*'")" -eq 0 ] ||
-  fail "secure: agentpool-watch ClusterRole must not use wildcard verbs"
+[ "$(count_docs "${secure}" "^kind: Role\$" "^  name: concord-agent-operator\$")" -eq 1 ] ||
+  fail "secure: namespaced operator Role must render"
+[ "$(count_docs "${secure}" "^kind: ClusterRole\$")" -eq 0 ] ||
+  fail "secure: cluster-wide roles must not render"
 
 grep -q 'image: library/postgres@sha256:e3d24f6906d0760bf4da0dae872415391ededefad23fd471c47dc53b0ddf3c42' "${secure}" ||
   fail "secure: PostgreSQL image must be the digest pin from database.internal.image.ref"
@@ -121,5 +118,7 @@ grep -q 'image: library/postgres:10.6' "${default}" ||
 
 grep -q 'websockets.requirePermission = false' "${default}" ||
   fail "default: server.conf must contain websockets.requirePermission = false"
+
+"${CHART_DIR}/test/render-rbac.sh"
 
 echo "render-secure: OK (default and secure contracts hold)"

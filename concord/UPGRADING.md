@@ -7,7 +7,9 @@ The console and database migrations use the server image.
 
 ## Check the installation
 
-The previous main chart declared 1.101.0, but its default images selected 2.15.0.
+The latest published chart is 1.40.0, which selects Concord 2.13.0.
+Unreleased main declared 1.101.0 while selecting images 2.15.0; it is not the
+published starting point.
 Read the deployed images and saved values before an upgrade.
 The chart creates no AgentPool. Users must supply agents separately.
 
@@ -15,6 +17,21 @@ Back up the database and test restoration before the upgrade.
 Preserve `SERVER_PASSWORD_BASE64`, `SECRET_STORE_SALT_BASE64`, and
 `PROJECT_SECRET_SALT_BASE64`. Preserve configured initial API token values.
 Changing encryption values can prevent decryption of existing secrets.
+
+## Reuse saved values with new chart defaults
+
+Do not use `helm upgrade --reuse-values` for this upgrade. It can omit newly
+introduced nested defaults and fail during rendering. Export only your saved
+user overrides and pass them to the new chart, so its new defaults are included:
+
+```sh
+helm get values <release> -n <namespace> -o yaml > saved-values.yaml
+helm upgrade <release> ./concord -n <namespace> -f saved-values.yaml
+```
+
+Keep that file private if it includes credentials. With Helm 3.14 or newer,
+`--reset-then-reuse-values` is another option. Do not combine it with
+`--reuse-values` or `--reset-values`, which override that behavior.
 
 ## PostgreSQL
 
@@ -34,17 +51,64 @@ Concord 2.47.0 uses open-source jOOQ 3.21. Its
 Concord source tests also use PostgreSQL 14 and 15. They do not establish a
 production support range for all application queries. Test migrations and process
 execution on PostgreSQL 18 before production use.
-PostgreSQL 10 is unsupported. PostgreSQL 14 support ends on 2026-11-12.
+PostgreSQL 10 is unsupported. PostgreSQL 14 support ended on 2026-11-12.
 See the [PostgreSQL version policy](https://www.postgresql.org/support/versioning/).
 
 The server applies Liquibase migrations during startup. A separate operation can use
 `CONCORD_COMMAND=migrateDb` with the same image and configuration.
 Versions 2.46.0 and 2.47.0 add no database changelog resources after 2.45.0.
-An upgrade from 2.15.0 includes migrations through 2.45.0.
+An upgrade from published chart 1.40.0 / Concord 2.13.0 includes migrations through 2.45.0.
 An actual 1.101.0 installation also needs the earlier schema and secret association changes.
 Test a restored database with its existing Liquibase checksums.
 An image rollback does not reverse migrations or PostgreSQL data conversion.
 Check extension privileges when the database user has restricted permissions.
+
+### Internal PostgreSQL rollout strategy
+
+The internal PostgreSQL Deployment now uses `Recreate`. During an upgrade,
+Kubernetes stops the old database pod before starting its replacement, so two
+PostgreSQL servers do not open the same data directory. Plan database downtime
+and drain application connections before upgrading. PostgreSQL 10.6 uses a smart
+shutdown on SIGTERM; active connections can outlast the pod termination grace
+period and force crash recovery even with this strategy.
+
+A release installed with Helm 4 server-side apply can reject this strategy switch:
+`spec.strategy.rollingUpdate: Forbidden: may not be specified when strategy type is 'Recreate'`.
+Choose one of these one-time workarounds for the upgrade:
+
+1. Use client-side apply for this upgrade:
+
+   ```sh
+   helm upgrade <release> ./concord -n <namespace> -f saved-values.yaml --server-side=false
+   ```
+
+2. Before upgrading, switch the existing Deployment with one JSON patch, then run
+   the normal upgrade. The patch can restart PostgreSQL; use a maintenance window.
+
+   ```sh
+   kubectl -n <namespace> patch deployment postgresql --type=json \
+     -p '[{"op":"remove","path":"/spec/strategy/rollingUpdate"},{"op":"replace","path":"/spec/strategy/type","value":"Recreate"}]'
+   helm upgrade <release> ./concord -n <namespace> -f saved-values.yaml
+   ```
+
+Setting `rollingUpdate: null` in the chart is insufficient for this Helm 4 case.
+
+## RBAC and operator credentials
+
+`server.kubernetesDispatcherRbac` has been removed. Concord 2.47.0 has no
+Kubernetes process dispatcher that consumes those permissions. Remove this unused
+value from saved overrides; upgrades remove its chart-managed Role and RoleBinding.
+Custom plugins that call Kubernetes must manage their own minimal RBAC separately.
+
+Namespaced operator mode (`agentOperator.rbac.clusterWide=false`) now uses only a
+release-scoped ServiceAccount, Role and RoleBinding with explicit verbs. The
+cluster-wide AgentPool watch has been removed; the operator watches its release
+namespace only. Helm removes the old watch binding and obsolete namespaced RBAC
+objects on upgrade. The default cluster-wide mode retains its historical names.
+
+When only `server.existingSecret` is set, the operator now uses its `AGENT_TOKEN`
+key automatically. An explicit `agentOperator.tokenSecretName` still takes
+precedence and uses `agentOperator.tokenSecretKey` (default `CONCORD_API_TOKEN`).
 
 ## Plugins and application configuration
 
@@ -120,12 +184,14 @@ The chart's legacy `dind` and agent image values remain unused.
 
 ## Validation
 
+Install Python 3 and PyYAML (`python3 -m pip install PyYAML==6.0.3`) for structural render assertions.
 Run `helm lint concord/`, `concord/test/render-secure.sh`, and `concord/test/render-upgrade.sh`.
 Run `concord/test/check-version.sh` with the release tag before packaging.
+The release tag must match the chart version; `appVersion` must match the default
+Concord image version. Chart-only fixes can increment the chart version without
+requiring a new Concord image.
 Test a fresh PostgreSQL 18 database and restored databases from supported source versions.
 Check console configuration, agent authentication, flows, forms, logs, suspension,
 resumption, Docker tasks, scaling, and enabled server plugins.
 Use finite test deadlines. The legacy kind helpers contain unbounded waits and assume
 an AgentPool that the chart does not create. Do not run them unattended.
-
-STE review: sentence structure checked. Full dictionary compliance remains unverified.

@@ -7,27 +7,33 @@ This is a Helm chart for [Concord][1]. Concord is the orchestration engine that 
 [Helm](https://helm.sh) must be installed to use the charts.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
-Once Helm is set up properly, add the repo as follows:
+Install a published chart from the public OCI registry (Helm 3.8 or newer):
 
 ```sh
-helm repo add concord https://concord-workflow.github.io/helm-charts
+helm install concord oci://ghcr.io/concord-workflow/concord-charts/concord --version 1.40.0
 ```
 
-To install a release named concord, run:
+Chart 1.40.0 is the latest published version and selects Concord 2.13.0.
+After chart 2.47.0 is published, use `--version 2.47.0` for Concord 2.47.0.
+To test these changes before publication, install from this Git checkout:
 
 ```sh
-helm install concord concord/concord
+helm install concord ./concord -f my-values.yaml
 ```
+
+The former `https://concord-workflow.github.io/helm-charts` Helm repository is
+unavailable. Use OCI packages or Git sources instead.
 
 ## Agent Pools
 
 The chart installs the agent operator and its CRD. It does not create an AgentPool.
 Supply an AgentPool or another agent deployment before submitting processes.
 
-`agentImageName`, `agentImageOverride`, `agent`, and `dind` values currently have no
-consumer in the chart templates. `files/agent/agent.conf` is an external AgentPool
-example and requires `SERVER_API_KEY` from the agent pod environment.
-See [the upgrade instructions](UPGRADING.md) and `test/agentpool-2.47.0.yaml`.
+The legacy `agentImageName`, `agentImageOverride`, and `dind` values have no
+consumer in the chart templates. Configure agent images, tokens and DinD in your
+external AgentPool. See [the upgrade instructions](UPGRADING.md) and the complete
+[test/agentpool-2.47.0.yaml](test/agentpool-2.47.0.yaml) fixture. It requires
+`SERVER_API_KEY` from the agent pod environment.
 
 ## Running EKS with IRSA
 
@@ -94,9 +100,11 @@ By default, the chart renders a `concord-server-credentials` Secret from the
 
 For a hardened installation, create the Secret outside of Helm and set
 `server.existingSecret` to its name. The chart then renders no Secret at all:
-the server Deployment, the agent operator Deployment (when
-`agentOperator.tokenSecretName` points at the same Secret) and the internal
-PostgreSQL Deployment all read their credentials from it. A missing key or
+the server Deployment, agent operator and internal PostgreSQL all read it.
+Unless `agentOperator.tokenSecretName` selects a separate Secret, the operator
+uses the external server Secret's `AGENT_TOKEN` key. For a separate operator
+Secret, `agentOperator.tokenSecretKey` defaults to `CONCORD_API_TOKEN`; set it to
+`AGENT_TOKEN` when that is the key in your Secret. A missing key or
 Secret leaves the pods unready instead of silently falling back to rendered
 credentials.
 
@@ -124,17 +132,16 @@ Set `database.internal.image.ref` to a digest-pinned image (for example
 ## Hardening values
 
 - `agentOperator.tokenSecretName` and `agentOperator.tokenSecretKey` (default
-  `CONCORD_API_TOKEN`): read the operator's API token from a Secret instead of
-  the literal `server.agentToken` value.
+  `CONCORD_API_TOKEN`): select a separate operator token Secret. An empty name
+  uses `server.existingSecret` with key `AGENT_TOKEN` when set, otherwise the
+  literal `server.agentToken` value.
 - `agentOperator.rbac.clusterWide` (default `true`): keep the historical broad
-  ClusterRole. Set to `false` to render a namespaced `concord-agent-operator`
-  Role (pods, events, ConfigMaps, pods/exec and AgentPools) plus a cluster-wide
-  `concord-agent-operator-agentpool-watch` ClusterRole limited to get, list and
-  watch on AgentPools.
-- `server.kubernetesDispatcherRbac.enabled` (default `false`): render a
-  namespaced `concord-k8s-dispatcher` Role/RoleBinding allowing the server
-  ServiceAccount to manage Secrets and Jobs for the Kubernetes process
-  dispatcher.
+  ClusterRole. Set to `false` for a release-scoped ServiceAccount, Role and
+  RoleBinding in the release namespace, with explicit verbs for pods, ConfigMaps
+  and AgentPools. No cluster-wide AgentPool access, events or pods/exec is granted.
+  The operator watches only its `WATCH_NAMESPACE`. Separate namespaced releases
+  can coexist in different namespaces; the chart's other fixed resource names
+  still require one release per namespace.
 - `expose.type: clusterIP`: render a plain ClusterIP `concord-server` Service.
 - `expose.debug.enabled` (default `true`): include the server debug port 5005
   in the `concord-server` Service.
@@ -153,9 +160,9 @@ your agent users were granted the `agentWebsocket` permission.
 ## OCI packages and Git sources
 
 Tagged pushes build an OCI chart package in
-`ghcr.io/concord-workflow/concord-charts`. Pulling that package requires an
-authenticated `helm registry login`. To consume a release anonymously, use the
-public Git tag instead:
+`ghcr.io/concord-workflow/concord-charts/concord`. Public packages can be pulled
+anonymously; no `helm registry login` is required. You can also use a published
+Git tag. After the 2.47.0 tag is published:
 
 ```sh
 git clone --branch 2.47.0 --depth 1 https://github.com/concord-workflow/concord-charts.git

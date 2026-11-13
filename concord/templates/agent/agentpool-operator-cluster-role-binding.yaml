@@ -3,44 +3,30 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: concord-agent-operator
+  name: {{ include "concord.agentOperatorRbacName" . }}
 {{ include "concord.commonMetadataLabels" . | indent 2 }}
 subjects:
   - kind: ServiceAccount
-    name: concord-agent-operator
+    name: {{ include "concord.agentOperatorRbacName" . }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: concord-agent-operator
+  name: {{ include "concord.agentOperatorRbacName" . }}
   apiGroup: rbac.authorization.k8s.io
 {{- else }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: concord-agent-operator
+  name: {{ include "concord.agentOperatorRbacName" . }}
   namespace: {{ .Release.Namespace }}
 {{ include "concord.commonMetadataLabels" . | indent 2 }}
 subjects:
   - kind: ServiceAccount
-    name: concord-agent-operator
+    name: {{ include "concord.agentOperatorRbacName" . }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
-  name: concord-agent-operator
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: concord-agent-operator-agentpool-watch
-{{ include "concord.commonMetadataLabels" . | indent 2 }}
-subjects:
-  - kind: ServiceAccount
-    name: concord-agent-operator
-    namespace: {{ .Release.Namespace }}
-roleRef:
-  kind: ClusterRole
-  name: concord-agent-operator-agentpool-watch
+  name: {{ include "concord.agentOperatorRbacName" . }}
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
 {{- end }}

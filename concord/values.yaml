@@ -37,6 +37,7 @@ registryCredentials:
 
 expose:
   port: 8001
+  # Allowed values: ingress, nodePort, loadBalancer, clusterIP (case-sensitive).
   type: ingress
   debug:
     # include the server debug port 5005 in the concord-server Service
@@ -120,10 +121,6 @@ server:
   # Concord 2.45+ requires the 'agentWebsocket' permission for agent WebSocket
   # connections; false preserves the pre-2.45 behavior
   websocketsRequirePermission: false
-  kubernetesDispatcherRbac:
-    # render a namespaced Role/RoleBinding for the server's Kubernetes
-    # process dispatcher (Secrets and Jobs in the release namespace)
-    enabled: false
   serviceMonitor:
     enabled: false # enable to create a monitoring.coreos.com/v1 ServiceMonitor for the server with the given labels
     labels: {}
@@ -137,18 +134,15 @@ server:
   # MAP of extra secrets
   extraSecrets: {}
 
-agent:
-  readTimeout: "10 seconds"
-
 agentOperator:
   enabled: true
-  # name of a Secret with the operator's API token; when empty the operator
-  # uses the literal server.agentToken value
+  # Optional separate operator Secret, using tokenSecretKey. When empty, use
+  # server.existingSecret/AGENT_TOKEN if set, otherwise literal server.agentToken.
   tokenSecretName: ""
   tokenSecretKey: CONCORD_API_TOKEN
   rbac:
     # true: broad cluster-wide ClusterRole (historical default);
-    # false: namespaced Role plus a cluster-wide AgentPool watch role
+    # false: release-scoped ServiceAccount/Role/RoleBinding in WATCH_NAMESPACE only
     clusterWide: true
   monitoring:
     enabled: false
