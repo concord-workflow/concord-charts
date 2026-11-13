@@ -185,7 +185,10 @@ Configure `networkPolicy.server.agentPeers` for your AgentPools and
 `networkPolicy.server.ingressPeers` for ingress controllers and monitoring.
 Use stable namespace and pod labels together in each cross-namespace peer.
 The enabled policy allows only TCP 8001 to the server and only server pods to
-internal PostgreSQL. Database administration from other pods and remote debug
+internal PostgreSQL when the server is also internal. With an external server,
+the chart omits the PostgreSQL policy; provide your own database ingress rules.
+For NodePort/LoadBalancer exposure, configure approved source CIDRs with `ipBlock`
+and verify source-address translation for your network plugin. Database administration from other pods and remote debug
 connections will be blocked. Egress is unchanged. See [NetworkPolicy](README.md#networkpolicy).
 
 ## Validation

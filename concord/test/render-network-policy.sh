@@ -69,7 +69,7 @@ assert all(d['metadata']['labels']['owner'] == 'platform' for d in p.values())
 p = policies('external-db.yaml')
 assert set(p) == {'concord-server'}
 assert pod('name', 'concord-agent-operator') not in p['concord-server']['spec']['ingress'][0]['from']
-assert set(policies('external-server.yaml')) == {'postgresql'}
+assert not policies('external-server.yaml')
 assert not policies('external-both.yaml')
 print('render-network-policy: OK (disabled, enabled, peers, external components)')
 PY
