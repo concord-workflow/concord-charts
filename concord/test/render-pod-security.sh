@@ -14,6 +14,17 @@ helm template concord "${CHART_DIR}" --set database.type=external --set agentOpe
 helm template concord "${CHART_DIR}" --set server.postgresReady.resources.requests.cpu=25m \
   --set server.postgresReady.resources.limits.memory=128Mi > "${WORK_DIR}/resources.yaml"
 helm template concord "${CHART_DIR}" --set server.postgresReady.resources=null > "${WORK_DIR}/no-resources.yaml"
+# Reject string booleans instead of silently choosing the automatic default.
+for invalid in true false 1 ''; do
+  if helm template concord "${CHART_DIR}" --set-string server.automountServiceAccountToken="${invalid}" > /dev/null 2>&1; then
+    echo "render-pod-security: FAIL: non-boolean token setting accepted: ${invalid}" >&2
+    exit 1
+  fi
+done
+helm template concord "${CHART_DIR}" --set server.automountServiceAccountToken=1 > "${WORK_DIR}/invalid-token.yaml" 2> "${WORK_DIR}/invalid-token.log" && {
+  echo 'render-pod-security: FAIL: numeric token setting accepted' >&2
+  exit 1
+}
 python3 - "${WORK_DIR}" "${CHART_DIR}" <<'PY'
 import sys
 from pathlib import Path

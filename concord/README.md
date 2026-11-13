@@ -183,7 +183,8 @@ The operator calls the Kubernetes API and defaults to
 `security.clusterAdmin` is enabled,
 and `false` otherwise. Set `server.automountServiceAccountToken=true` explicitly
 for API-using plugins or RBAC configured outside this chart; explicit `false`
-also overrides the automatic choice. Secret and ConfigMap volume/env injection
+also overrides the automatic choice. Use YAML booleans or `null`; strings such as
+`"true"` (including `--set-string`) fail rendering. Secret and ConfigMap volume/env injection
 does not require a pod API token. External AgentPools own their pod settings;
 the test AgentPool disables token mounting. Enable it if process tasks call the API.
 Cloud workload-identity projected tokens may be managed separately by admission webhooks.

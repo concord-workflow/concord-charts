@@ -28,6 +28,9 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if not (or (kindIs "bool" .Values.server.automountServiceAccountToken) (kindIs "invalid" .Values.server.automountServiceAccountToken)) }}
+      {{- fail "server.automountServiceAccountToken must be a boolean or null" }}
+      {{- end }}
       {{- if kindIs "bool" .Values.server.automountServiceAccountToken }}
       automountServiceAccountToken: {{ .Values.server.automountServiceAccountToken }}
       {{- else }}
