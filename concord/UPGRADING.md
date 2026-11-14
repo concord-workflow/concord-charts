@@ -7,9 +7,9 @@ The console and database migrations use the server image.
 
 ## Check the installation
 
-The latest published chart is 1.40.0, which selects Concord 2.13.0.
-Unreleased main declared 1.101.0 while selecting images 2.15.0; it is not the
-published starting point.
+For upgrades from chart 1.40.0, its default Concord version is 2.13.0.
+Some pre-release builds from `main` declared chart 1.101.0 while selecting
+images 2.15.0.
 Read the deployed images and saved values before an upgrade.
 The chart creates no AgentPool. Users must supply agents separately.
 
