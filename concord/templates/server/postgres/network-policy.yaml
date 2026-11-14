@@ -1,0 +1,21 @@
+{{- if and .Values.networkPolicy.enabled (eq .Values.database.type "internal") (eq .Values.server.type "internal") }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgresql
+{{ include "concord.commonMetadataLabels" . | indent 2 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.database.internal.port }}
+      from:
+        - podSelector:
+            matchLabels:
+              app: concord-server
+{{- end }}
