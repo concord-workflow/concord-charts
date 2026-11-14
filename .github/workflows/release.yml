@@ -1,5 +1,6 @@
 name: Stateless Helm Chart build
 on:
+  pull_request:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
@@ -27,14 +28,34 @@ jobs:
         run: |
           helm lint concord/
 
+      - name: Install Render Test Dependencies
+        run: python3 -m pip install PyYAML==6.0.3
+
+      - name: Render Secure Contract
+        run: |
+          concord/test/render-secure.sh
+
+      - name: Check Release Versions
+        run: concord/test/check-version.sh
+
+      - name: Render Upgrade Contract
+        run: concord/test/render-upgrade.sh
+
+      - name: Check Release Tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: concord/test/check-version.sh "${GITHUB_REF_NAME}"
+
       - name: Package Helm Charts
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           helm package concord/ --version ${GITHUB_REF_NAME}
 
       - name: Login to GitHub Container Registry
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           helm registry login --username ${GITHUB_ACTOR} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
 
       - name: Publish Helm Charts
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           helm push concord-${GITHUB_REF_NAME}.tgz oci://ghcr.io/${GITHUB_REPOSITORY}          

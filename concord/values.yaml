@@ -2,7 +2,7 @@
 # Concord
 # --------------------------------------------------------------------------------------------------------------------
 
-version: 2.15.0
+version: "2.47.0"
 registry: walmartlabs
 serverImageName: concord-server
 # serverImageOverride: myharbor.io/myproject/my-k8s-server:myTag
@@ -37,11 +37,17 @@ registryCredentials:
 
 expose:
   port: 8001
+  # Allowed values: ingress, nodePort, loadBalancer, clusterIP (case-sensitive).
   type: ingress
+  debug:
+    # include the server debug port 5005 in the concord-server Service
+    enabled: true
   tls:
     enabled: true
     secretName: concord-tls
   ingress:
+    # Optional Kubernetes IngressClass (for example, tailscale).
+    className: ""
     host: concord.yourdomain.com
     annotations:
       ingress.kubernetes.io/ssl-redirect: "true"
@@ -73,8 +79,13 @@ database:
     user: "postgres"
     password: "q1q1q1q1"
     database: "postgres"
+    # Service type for the internal PostgreSQL Service
+    serviceType: NodePort
     image:
+      # digest-pinned image reference; takes precedence over repository/tag
+      ref: ""
       repository: library/postgres
+      # Preserve the existing default; migrate data explicitly before changing majors.
       tag: 10.6
     resources: {}
     deploymentAnnotations: {}
@@ -97,6 +108,9 @@ database:
 server:
   type: internal
   replicaCount: 1
+  # name of an externally managed Secret holding the server's credentials;
+  # when empty the chart renders its own concord-server-credentials Secret
+  existingSecret: ""
   adminToken: "auBy4eDWrKWsyhiDp3AQiw"
   agentToken: "auBy4eDWrKWsyhiDp3AQiwXX"
   maxLogAge: "7 days"
@@ -104,6 +118,9 @@ server:
   maxStalledAge: "1 minute"
   sessionTimeout: "3 hours"
   tmpDirSizeLimit: "16Gi"
+  # Concord 2.45+ requires the 'agentWebsocket' permission for agent WebSocket
+  # connections; false preserves the pre-2.45 behavior
+  websocketsRequirePermission: false
   serviceMonitor:
     enabled: false # enable to create a monitoring.coreos.com/v1 ServiceMonitor for the server with the given labels
     labels: {}
@@ -117,11 +134,16 @@ server:
   # MAP of extra secrets
   extraSecrets: {}
 
-agent:
-  readTimeout: "10 seconds"
-
 agentOperator:
   enabled: true
+  # Optional separate operator Secret, using tokenSecretKey. When empty, use
+  # server.existingSecret/AGENT_TOKEN if set, otherwise literal server.agentToken.
+  tokenSecretName: ""
+  tokenSecretKey: CONCORD_API_TOKEN
+  rbac:
+    # true: broad cluster-wide ClusterRole (historical default);
+    # false: release-scoped ServiceAccount/Role/RoleBinding in WATCH_NAMESPACE only
+    clusterWide: true
   monitoring:
     enabled: false
     org: "Default"

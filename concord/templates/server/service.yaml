@@ -15,9 +15,11 @@ spec:
       port: {{ .Values.expose.port }}
       nodePort: {{ .Values.expose.nodePort.ports.http.port }}
       targetPort: 8001
+    {{- if .Values.expose.debug.enabled }}
     - name: debug
       port: 5005
       targetPort: 5005
+    {{- end }}
   selector:
     app: concord-server
 {{- else if eq .Values.expose.type "loadBalancer" }}
@@ -43,9 +45,33 @@ spec:
     - name: http
       port: {{ .Values.expose.port }}
       targetPort: 8001
+    {{- if .Values.expose.debug.enabled }}
     - name: debug
       port: 5005
       targetPort: 5005
+    {{- end }}
+  selector:
+    app: concord-server
+{{- else if eq .Values.expose.type "clusterIP" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: concord-server
+  labels:
+    app: concord-server
+    {{- include "concord.commonLabels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: {{ .Values.expose.port }}
+      targetPort: 8001
+    {{- if .Values.expose.debug.enabled }}
+    - name: debug
+      port: 5005
+      targetPort: 5005
+    {{- end }}
   selector:
     app: concord-server
 {{- else if eq .Values.expose.type "ingress" }}
@@ -63,9 +89,11 @@ spec:
     - name: http
       port: {{ .Values.expose.port }}
       targetPort: 8001
+    {{- if .Values.expose.debug.enabled }}
     - name: debug
       port: 5005
       targetPort: 5005
+    {{- end }}
   selector:
     app: concord-server
 {{- end }}

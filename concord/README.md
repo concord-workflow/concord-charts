@@ -7,23 +7,31 @@ This is a Helm chart for [Concord][1]. Concord is the orchestration engine that 
 [Helm](https://helm.sh) must be installed to use the charts.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
-Once Helm is set up properly, add the repo as follows:
+Install a published chart from the public OCI registry (Helm 3.8 or newer):
 
 ```sh
-helm repo add concord https://concord-workflow.github.io/helm-charts
+helm install concord oci://ghcr.io/concord-workflow/concord-charts/concord --version 2.47.0
 ```
 
-To install a release named concord, run:
+Chart 2.47.0 selects Concord 2.47.0. To install from a Git checkout:
 
 ```sh
-helm install concord concord/concord
+helm install concord ./concord -f my-values.yaml
 ```
+
+The former `https://concord-workflow.github.io/helm-charts` Helm repository is
+unavailable. Use OCI packages or Git sources instead.
 
 ## Agent Pools
 
-For reasonable, out of the box utility, an autoscaling agent pool is enabled by default with a minimum size of one, and a maximum size of 10. The number of agents autoscale based on the number of processes waiting in the queue.
+The chart installs the agent operator and its CRD. It does not create an AgentPool.
+Supply an AgentPool or another agent deployment before submitting processes.
 
-The default autoscaling agent pool will likely cover most use cases, but you are free to create as many agent pools as you wish, each with different configurations and capabilities.
+The legacy `agentImageName`, `agentImageOverride`, and `dind` values have no
+consumer in the chart templates. Configure agent images, tokens and DinD in your
+external AgentPool. See [the upgrade instructions](UPGRADING.md) and the complete
+[test/agentpool-2.47.0.yaml](test/agentpool-2.47.0.yaml) fixture. It requires
+`SERVER_API_KEY` from the agent pod environment.
 
 ## Running EKS with IRSA
 
@@ -81,6 +89,83 @@ eksctl create iamserviceaccount \
 At this point, you now have a cluster where you can deploy (or redeploy) Concord with IRSA enabled.
 
 Using the Concord chart, all you have to do is specify the value of the `serviceAccount.name` field in your values to be the same as the name of the service account name you specify in the `eksctl` configuration and everything will be wired up for you automatically.
+
+## External credentials
+
+By default, the chart renders a `concord-server-credentials` Secret from the
+`database.internal.password` (or `database.external.password`),
+`server.adminToken` and `server.agentToken` values.
+
+For a hardened installation, create the Secret outside of Helm and set
+`server.existingSecret` to its name. The chart then renders no Secret at all:
+the server Deployment, agent operator and internal PostgreSQL all read it.
+Unless `agentOperator.tokenSecretName` selects a separate Secret, the operator
+uses the external server Secret's `AGENT_TOKEN` key. For a separate operator
+Secret, `agentOperator.tokenSecretKey` defaults to `CONCORD_API_TOKEN`; set it to
+`AGENT_TOKEN` when that is the key in your Secret. A missing key or
+Secret leaves the pods unready instead of silently falling back to rendered
+credentials.
+
+Required keys:
+
+- `DB_PASSWORD`
+- `SERVER_PASSWORD_BASE64`
+- `SECRET_STORE_SALT_BASE64`
+- `PROJECT_SECRET_SALT_BASE64`
+- `ADMIN_TOKEN`
+- `AGENT_TOKEN`
+
+Conditional keys, referenced only when the corresponding feature is enabled:
+
+- `LDAP_SYSTEM_PASSWORD` when `ldap.enabled` is true;
+- `GITHUB_SECRET` when `github.enabled` is true;
+- `GIT_OAUTH` when `git.oauth` is set.
+
+The internal PostgreSQL Deployment reads `DB_PASSWORD` from the same Secret, so
+`POSTGRES_PASSWORD` is never rendered into the `postgresql-config` ConfigMap.
+Set `database.internal.image.ref` to a digest-pinned image (for example
+`library/postgres@sha256:...`) to pin the database image immutably;
+`database.internal.image.repository`/`tag` remain supported.
+
+## Hardening values
+
+- `agentOperator.tokenSecretName` and `agentOperator.tokenSecretKey` (default
+  `CONCORD_API_TOKEN`): select a separate operator token Secret. An empty name
+  uses `server.existingSecret` with key `AGENT_TOKEN` when set, otherwise the
+  literal `server.agentToken` value.
+- `agentOperator.rbac.clusterWide` (default `true`): keep the historical broad
+  ClusterRole. Set to `false` for a release-scoped ServiceAccount, Role and
+  RoleBinding in the release namespace, with explicit verbs for pods, ConfigMaps
+  and AgentPools. No cluster-wide AgentPool access, events or pods/exec is granted.
+  The operator watches only its `WATCH_NAMESPACE`. Separate namespaced releases
+  can coexist in different namespaces; the chart's other fixed resource names
+  still require one release per namespace.
+- `expose.type: clusterIP`: render a plain ClusterIP `concord-server` Service.
+- `expose.debug.enabled` (default `true`): include the server debug port 5005
+  in the `concord-server` Service.
+- `database.internal.serviceType` (default `NodePort`): Service type for the
+  internal PostgreSQL Service.
+- `database.storageClass`: storage class for the `postgresql-pvc` PVC.
+
+## WebSockets
+
+Concord 2.45.0 requires the `agentWebsocket` permission for agent WebSocket
+connections (see the Concord 2.45.0 changelog). The chart renders
+`websockets.requirePermission` from `server.websocketsRequirePermission`,
+defaulting to `false` to preserve the pre-2.45 behavior. Set it to `true` once
+your agent users were granted the `agentWebsocket` permission.
+
+## OCI packages and Git sources
+
+Tagged pushes build an OCI chart package in
+`ghcr.io/concord-workflow/concord-charts/concord`. Public packages can be pulled
+anonymously; no `helm registry login` is required. You can also use a published
+Git tag:
+
+```sh
+git clone --branch 2.47.0 --depth 1 https://github.com/concord-workflow/concord-charts.git
+helm upgrade --install concord concord-charts/concord -f my-values.yaml
+```
 
 [1]: https://concord.walmartlabs.com/
 [2]: https://aws.amazon.com/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/

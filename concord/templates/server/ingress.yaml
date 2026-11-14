@@ -12,11 +12,16 @@ metadata:
 {{- end }}
 {{- end }}
 spec:
+  {{- with .Values.expose.ingress.className }}
+  ingressClassName: {{ . | quote }}
+  {{- end }}
   {{- if .Values.expose.tls.enabled }}
   tls:
-    - secretName: {{ .Values.expose.tls.secretName }}
-      hosts:
+    - hosts:
         - {{ .Values.expose.ingress.host }}
+      {{- with .Values.expose.tls.secretName }}
+      secretName: {{ . }}
+      {{- end }}
   {{- end }}
   rules:
   - host: {{ .Values.expose.ingress.host }}

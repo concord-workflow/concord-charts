@@ -1,4 +1,5 @@
 {{- if .Values.agentOperator.enabled }}
+{{- if .Values.agentOperator.rbac.clusterWide }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -35,4 +36,22 @@ rules:
       - '*'
     verbs:
       - '*'
+{{- else }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "concord.agentOperatorRbacName" . }}
+  namespace: {{ .Release.Namespace }}
+{{ include "concord.commonMetadataLabels" . | indent 2 }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["concord.walmartlabs.com"]
+    resources: ["agentpools"]
+    verbs: ["get", "list", "watch"]
+{{- end }}
 {{- end }}
