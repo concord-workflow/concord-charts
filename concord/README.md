@@ -155,7 +155,7 @@ Your cluster network must enforce Kubernetes NetworkPolicy.
 
 The PostgreSQL policy is rendered only when both the server and database are
 internal. With `server.type=external`, this chart leaves database policy to the
-operator, so it cannot block the external database client by selecting absent
+database owner, so it cannot block the external database client by selecting absent
 server pods. Configure your own database ingress policy for that topology.
 
 PostgreSQL accepts TCP on `database.internal.port` only from pods labelled
