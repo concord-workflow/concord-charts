@@ -95,20 +95,15 @@ Setting `rollingUpdate: null` in the chart is insufficient for this Helm 4 case.
 
 ## RBAC and operator credentials
 
-`server.kubernetesDispatcherRbac` has been removed. Concord 2.47.0 has no
-Kubernetes process dispatcher that consumes those permissions. Remove this unused
-value from saved overrides; upgrades remove its chart-managed Role and RoleBinding.
+Compared with published chart 1.40.0, this chart adds optional namespaced operator
+RBAC and externally managed credentials. Set `agentOperator.rbac.clusterWide=false`
+for a release-scoped ServiceAccount, Role and RoleBinding with explicit verbs.
+The operator watches its release namespace only. The default cluster-wide mode
+retains its historical permissions and object names.
+
+For external credentials, see [External credentials](README.md#external-credentials).
 Custom plugins that call Kubernetes must manage their own minimal RBAC separately.
-
-Namespaced operator mode (`agentOperator.rbac.clusterWide=false`) now uses only a
-release-scoped ServiceAccount, Role and RoleBinding with explicit verbs. The
-cluster-wide AgentPool watch has been removed; the operator watches its release
-namespace only. Helm removes the old watch binding and obsolete namespaced RBAC
-objects on upgrade. The default cluster-wide mode retains its historical names.
-
-When only `server.existingSecret` is set, the operator now uses its `AGENT_TOKEN`
-key automatically. An explicit `agentOperator.tokenSecretName` still takes
-precedence and uses `agentOperator.tokenSecretKey` (default `CONCORD_API_TOKEN`).
+Concord 2.47.0 has no built-in Kubernetes process dispatcher.
 
 ## Plugins and application configuration
 
