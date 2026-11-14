@@ -206,6 +206,14 @@ For NodePort/LoadBalancer exposure, configure approved source CIDRs with `ipBloc
 and verify source-address translation for your network plugin. Database administration from other pods and remote debug
 connections will be blocked. Egress is unchanged. See [NetworkPolicy](README.md#networkpolicy).
 
+## Optional CORS origin
+
+`server.cors.allowOrigin` defaults to `null` and leaves Concord's wildcard origin
+unchanged. Set a single browser origin to restrict cross-origin consoles and forms.
+Test their API and OPTIONS requests before upgrading with that value.
+Concord 2.47.0 cannot configure Jetty's `Server` header; suppressing it needs a core
+change and a later release. See [CORS](README.md#cors-and-the-server-header).
+
 ## Validation
 
 Install Python 3 and PyYAML (`python3 -m pip install PyYAML==6.0.3`) for structural render assertions.
