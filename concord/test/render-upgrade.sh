@@ -82,17 +82,21 @@ for invalid in ClusterIP typo; do
     fail "invalid expose.type accepted: ${invalid}"
   fi
 done
-# External servers do not consume expose.type, including legacy values.
-helm template concord "${CHART_DIR}" --set server.type=external \
-  --set server.apiBaseUrl=https://concord.example.com --set expose.type=none > "${WORK_DIR}/external-server.yaml"
-python3 - "${WORK_DIR}/external-server.yaml" <<'PY'
+# External servers ignore expose.type and must render no server Service/Ingress,
+# including when a valid exposure would otherwise select those resources.
+for exposure in none clusterIP ingress; do
+  helm template concord "${CHART_DIR}" --set server.type=external \
+    --set server.apiBaseUrl=https://concord.example.com --set expose.type="${exposure}" > "${WORK_DIR}/external-server.yaml" ||
+    fail "external server render failed for expose.type=${exposure}"
+  python3 - "${WORK_DIR}/external-server.yaml" "${exposure}" <<'PY'
 import sys, yaml
 with open(sys.argv[1]) as manifest:
     for doc in yaml.safe_load_all(manifest):
         if doc and (doc.get('kind') == 'Ingress' or
                     (doc.get('kind') == 'Service' and doc.get('metadata', {}).get('name') == 'concord-server')):
-            sys.exit('render-upgrade: FAIL: external server must not render a server Service or Ingress')
+            sys.exit('render-upgrade: FAIL: external server must not render a server Service or Ingress for expose.type=' + sys.argv[2])
 PY
+done
 # A chart-only release must work without a new Concord image.
 cp -R "${CHART_DIR}" "${WORK_DIR}/chart"
 sed -i 's/^version: .*/version: 2.47.1/' "${WORK_DIR}/chart/Chart.yaml"
