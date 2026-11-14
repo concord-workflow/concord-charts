@@ -10,12 +10,10 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 Install a published chart from the public OCI registry (Helm 3.8 or newer):
 
 ```sh
-helm install concord oci://ghcr.io/concord-workflow/concord-charts/concord --version 1.40.0
+helm install concord oci://ghcr.io/concord-workflow/concord-charts/concord --version 2.47.0
 ```
 
-Chart 1.40.0 is the latest published version and selects Concord 2.13.0.
-After chart 2.47.0 is published, use `--version 2.47.0` for Concord 2.47.0.
-To test these changes before publication, install from this Git checkout:
+Chart 2.47.0 selects Concord 2.47.0. To install from a Git checkout:
 
 ```sh
 helm install concord ./concord -f my-values.yaml
@@ -162,7 +160,7 @@ your agent users were granted the `agentWebsocket` permission.
 Tagged pushes build an OCI chart package in
 `ghcr.io/concord-workflow/concord-charts/concord`. Public packages can be pulled
 anonymously; no `helm registry login` is required. You can also use a published
-Git tag. After the 2.47.0 tag is published:
+Git tag:
 
 ```sh
 git clone --branch 2.47.0 --depth 1 https://github.com/concord-workflow/concord-charts.git
