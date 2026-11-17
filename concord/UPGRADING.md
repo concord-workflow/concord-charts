@@ -177,6 +177,20 @@ Choose and pin a DinD image before applying it. Replace `DIND_IMAGE` in the fixt
 Use the same absolute process paths in the agent and DinD containers.
 The chart's legacy `dind` and agent image values remain unused.
 
+## Optional ingress isolation
+
+NetworkPolicy is off by default. Before setting `networkPolicy.enabled=true`,
+check your network plugin's enforcement and inventory every server caller.
+Configure `networkPolicy.server.agentPeers` for your AgentPools and
+`networkPolicy.server.ingressPeers` for ingress controllers and monitoring.
+Use stable namespace and pod labels together in each cross-namespace peer.
+The enabled policy allows only TCP 8001 to the server and only server pods to
+internal PostgreSQL when the server is also internal. With an external server,
+the chart omits the PostgreSQL policy; provide your own database ingress rules.
+For NodePort/LoadBalancer exposure, configure approved source CIDRs with `ipBlock`
+and verify source-address translation for your network plugin. Database administration from other pods and remote debug
+connections will be blocked. Egress is unchanged. See [NetworkPolicy](README.md#networkpolicy).
+
 ## Validation
 
 Install Python 3 and PyYAML (`python3 -m pip install PyYAML==6.0.3`) for structural render assertions.
