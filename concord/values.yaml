@@ -108,6 +108,9 @@ database:
       repository: library/postgres
       # Preserve the existing default; migrate data explicitly before changing majors.
       tag: 10.6
+    podSecurityContext: {}
+    securityContext: {}
+    automountServiceAccountToken: false
     resources: {}
     deploymentAnnotations: {}
     podAnnotations: {}
@@ -127,6 +130,21 @@ database:
 # --------------------------------------------------------------------------------------------------------------------
 
 server:
+  # Empty contexts preserve the image defaults. See test/restricted-values.yaml.
+  podSecurityContext: {}
+  securityContext: {}
+  # null: true for security.clusterAdmin, otherwise false.
+  # Set true for API-using plugins or RBAC managed outside this chart.
+  automountServiceAccountToken: null
+  postgresReady:
+    securityContext: {}
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
   type: internal
   replicaCount: 1
   # name of an externally managed Secret holding the server's credentials;
@@ -156,6 +174,10 @@ server:
   extraSecrets: {}
 
 agentOperator:
+  podSecurityContext: {}
+  securityContext: {}
+  # The operator calls the Kubernetes API and needs its ServiceAccount token.
+  automountServiceAccountToken: true
   enabled: true
   # Optional separate operator Secret, using tokenSecretKey. When empty, use
   # server.existingSecret/AGENT_TOKEN if set, otherwise literal server.agentToken.

@@ -177,6 +177,21 @@ Choose and pin a DinD image before applying it. Replace `DIND_IMAGE` in the fixt
 Use the same absolute process paths in the agent and DinD containers.
 The chart's legacy `dind` and agent image values remain unused.
 
+## Optional pod hardening and token mounts
+
+Pod and container security contexts remain empty by default. To opt in, review
+[test/restricted-values.yaml](test/restricted-values.yaml), storage ownership and
+any custom images or plugin init containers before setting the contexts.
+Do not use namespace PSA enforcement for privileged DinD agents without exceptions.
+
+The ordinary server and internal PostgreSQL pods now disable automatic API token
+mounting. The operator retains its token. The cluster-admin option
+automatically retains the server token. If an external RoleBinding or
+plugin requires Kubernetes credentials, set `server.automountServiceAccountToken=true`
+before upgrading. Explicit token overrides take precedence over automatic behavior.
+`postgres-ready` now has small resource requests and limits; tune
+`server.postgresReady.resources` if needed. See [Pod security](README.md#pod-security).
+
 ## Optional ingress isolation
 
 NetworkPolicy is off by default. Before setting `networkPolicy.enabled=true`,

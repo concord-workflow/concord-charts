@@ -24,6 +24,18 @@ spec:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- with .Values.server.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if not (or (kindIs "bool" .Values.server.automountServiceAccountToken) (kindIs "invalid" .Values.server.automountServiceAccountToken)) }}
+      {{- fail "server.automountServiceAccountToken must be a boolean or null" }}
+      {{- end }}
+      {{- if kindIs "bool" .Values.server.automountServiceAccountToken }}
+      automountServiceAccountToken: {{ .Values.server.automountServiceAccountToken }}
+      {{- else }}
+      automountServiceAccountToken: {{ .Values.security.clusterAdmin }}
+      {{- end }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- include "imagePullSecretName" . | nindent 6 }}
       # https://medium.com/@xcoulon/initializing-containers-in-order-with-kubernetes-18173b9cc222
@@ -31,12 +43,28 @@ spec:
       {{- if eq .Values.database.type "internal" }}
         - name: postgres-ready
           image: {{ include "concord.postgresqlImage" . }}
+          {{- with .Values.server.postgresReady.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.server.postgresReady.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          # libpq needs a user name when the pod UID is absent from /etc/passwd.
+          env:
+            - name: PGUSER
+              value: {{ .Values.database.internal.user | quote }}
           command: [ 'sh', '-c', 'until pg_isready -h postgresql -p 5432; do echo waiting for database; sleep 1; done; sleep 5;' ]
       {{- end }}
       {{- range $index, $sidecar := .Values.sidecars }}
       {{- if $sidecar.enabled }}
         - name: {{ $sidecar.name }}
           image: {{ $sidecar.image }}
+          {{- with $sidecar.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command: [ 'sh', '-c', 'ls /{{ $sidecar.name }}/ && cp /dist/* /{{ $sidecar.name }}/' ]
           volumeMounts:
             - name: {{ $sidecar.name }}-jars
@@ -45,6 +73,10 @@ spec:
       {{- end }}
       containers:
         - name: concord-server
+          {{- with .Values.server.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- if .Values.serverImageOverride }}
           image: {{ .Values.serverImageOverride }}
           {{- else }}
