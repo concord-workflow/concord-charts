@@ -266,6 +266,35 @@ policies are additive: another allow policy can widen access. Node traffic,
 host-networked proxies and Service address translation depend on the network
 implementation; validate actual ingress paths in an isolated environment.
 
+## CORS and the Server header
+
+`server.cors.allowOrigin` optionally sets Concord 2.47.0's
+`concord-server.server.cors.allowOrigin`. Its default `null` omits the setting and
+preserves Concord's `*` default. To restrict browser access to a single origin:
+
+```yaml
+server:
+  cors:
+    allowOrigin: https://console.example.com
+```
+
+Use one origin (scheme, host, optional port), without a path or trailing slash.
+Concord emits this fixed value on `/api/*` and `/forms/*`, including OPTIONS
+responses; it does not parse an allow-list or reflect matching request origins.
+Methods remain `*`, the allowed headers remain fixed, and credentials are not
+enabled. This setting controls browser CORS checks, not server authentication or
+non-browser access. Check cross-origin consoles and forms before changing it.
+
+Concord 2.47.0 does not expose a setting for Jetty's `Server` response header.
+No chart value is provided for an unsupported server feature. A core change
+would add a configuration flag and pass it to `HttpConfiguration.setSendServerVersion`,
+with response tests covering successful requests and errors. After that feature
+is released, the chart can expose it.
+
+Release source: [CORS configuration](https://github.com/walmartlabs/concord/blob/2.47.0/server/impl/src/main/java/com/walmartlabs/concord/server/cfg/ServerConfiguration.java),
+[CORS filter](https://github.com/walmartlabs/concord/blob/2.47.0/server/impl/src/main/java/com/walmartlabs/concord/server/boot/filters/CORSFilter.java),
+and [HTTP transport](https://github.com/walmartlabs/concord/blob/2.47.0/server/impl/src/main/java/com/walmartlabs/concord/server/boot/HttpServer.java).
+
 ## WebSockets
 
 Concord 2.45.0 requires the `agentWebsocket` permission for agent WebSocket
